@@ -19,7 +19,7 @@ document.body.appendChild( renderer.domElement );
 
 camera.position.z = 5;
 camera.position.y = 1.5;
-drawRobot({x: 0, y:0, z:1}, scene);
+drawRobot({x: 0, y:0, z:0}, scene);
 scene.add(pointLight, sunLight);
 
 function animate(){
