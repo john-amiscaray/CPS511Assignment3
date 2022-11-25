@@ -22,14 +22,14 @@ function drawRightHip(scene){
     const legWidth = robotBodyWidth / 2, legLength = robotBodyLength / 2, legDepth = robotBodyDepth / 2;
     const legGeo = new THREE.BoxGeometry(legWidth, legLength, legDepth);
     const legMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
-    const leg = new THREE.Mesh(legGeo, legMat);
+    const hip = new THREE.Mesh(legGeo, legMat);
 
-    leg.position.x = robotBody.position.x + (robotBodyWidth / 2);
-    leg.position.y = -(robotBodyLength / 2) - (legLength / 2);
-    leg.position.z = legDepth / 2;
+    hip.position.x = robotBody.position.x + (robotBodyWidth / 2);
+    hip.position.y = -(robotBodyLength / 2) - (legLength / 2);
+    hip.position.z = legDepth / 2;
 
-    robotBody.add(leg);
-    leftHip = leg;
+    robotBody.add(hip);
+    leftHip = hip;
 
 }
 
@@ -38,14 +38,14 @@ function drawLeftHip(scene){
     const legWidth = robotBodyWidth / 2, legLength = robotBodyLength / 2, legDepth = robotBodyDepth / 2;
     const legGeo = new THREE.BoxGeometry(legWidth, legLength, legDepth);
     const legMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
-    const leg = new THREE.Mesh(legGeo, legMat);
+    const hip = new THREE.Mesh(legGeo, legMat);
 
-    leg.position.x = -robotBody.position.x - (robotBodyWidth / 2);
-    leg.position.y = -(robotBodyLength / 2) - (legLength / 2);
-    leg.position.z = legDepth / 2;
+    hip.position.x = -robotBody.position.x - (robotBodyWidth / 2);
+    hip.position.y = -(robotBodyLength / 2) - (legLength / 2);
+    hip.position.z = legDepth / 2;
 
-    robotBody.add(leg);
-    rightHip = leg;
+    robotBody.add(hip);
+    rightHip = hip;
 
 }
 
