@@ -6,7 +6,7 @@ const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.inner
 const renderer = new THREE.WebGLRenderer();
 
 const pointLight = new THREE.PointLight(0xffffff);
-pointLight.position.set(1,1,1);
+pointLight.position.set(0,7,-5);
 
 //const ambientLight = new THREE.AmbientLight(0xffffff);
 const lightHelper = new THREE.PointLightHelper(pointLight);
