@@ -42,7 +42,7 @@ function drawHip(isLeft){
 
 }
 
-function drawLeftLeg(){
+function drawLeg(isLeft){
 
     legWidth = hipWidth * 0.75;
     legLength = hipLength * 2;
@@ -53,24 +53,13 @@ function drawLeftLeg(){
 
     leg.position.y = -(hipLength / 2) - (legLength / 2);
 
-    leftHip.add(leg);
-    leftLeg = leg;
-
-}
-
-function drawRightLeg(){
-
-    legWidth = hipWidth * 0.75;
-    legLength = hipLength * 2;
-    legDepth = hipDepth;
-    const hipGeo = new THREE.BoxGeometry(legWidth, legLength, legDepth);
-    const hipMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const leg = new THREE.Mesh(hipGeo, hipMat);
-
-    leg.position.y = -(hipLength / 2) - (legLength / 2);
-
-    rightHip.add(leg);
-    rightLeg = leg;
+    if(isLeft){
+        leftHip.add(leg);
+        leftLeg = leg;
+    }else{
+        rightHip.add(leg);
+        rightLeg = leg;
+    }
 
 }
 
@@ -79,8 +68,8 @@ function drawRobot({x, y, z}, scene){
     drawBody({x, y, z}, scene);
     drawHip(false);
     drawHip(true);
-    drawLeftLeg();
-    drawRightLeg();
+    drawLeg(true);
+    drawLeg(false);
 
 }
 
