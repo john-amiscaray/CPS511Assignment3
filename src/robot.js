@@ -3,7 +3,7 @@ const robotBodyWidth = 0.75, robotBodyLength = robotBodyWidth, robotBodyDepth = 
 function drawBody({x, y, z}, scene){
 
     const bodyGeo = new THREE.BoxGeometry(robotBodyLength, robotBodyLength, robotBodyDepth);
-    const bodyMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, specular: 0x2D372D, emissive: 0x00FF00 });
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x00FF00 });
     bodyGeo.computeVertexNormals();
     const body = new THREE.Mesh(bodyGeo, bodyMat);
     body.position.x = x;
