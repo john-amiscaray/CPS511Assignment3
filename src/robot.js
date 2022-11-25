@@ -19,7 +19,7 @@ function drawBody({x, y, z}, scene){
 
 }
 
-function drawRightHip(){
+function drawHip(isLeft){
 
     hipWidth = robotBodyWidth / 2;
     hipLength = robotBodyLength / 2;
@@ -28,30 +28,17 @@ function drawRightHip(){
     const hipMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
     const hip = new THREE.Mesh(hipGeo, hipMat);
 
-    hip.position.x = robotBody.position.x + (robotBodyWidth / 2);
+    hip.position.x = (isLeft ? -1 : 1) * (robotBody.position.x + (robotBodyWidth / 2));
+    console.log(hip.position.x);
     hip.position.y = -(robotBodyLength / 2) - (hipLength / 2);
     hip.position.z = hipDepth / 2;
 
     robotBody.add(hip);
-    leftHip = hip;
-
-}
-
-function drawLeftHip(){
-
-    hipWidth = robotBodyWidth / 2;
-    hipLength = robotBodyLength / 2;
-    hipDepth = robotBodyDepth / 2;
-    const hipGeo = new THREE.BoxGeometry(hipWidth, hipLength, hipDepth);
-    const hipMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
-    const hip = new THREE.Mesh(hipGeo, hipMat);
-
-    hip.position.x = -robotBody.position.x - (robotBodyWidth / 2);
-    hip.position.y = -(robotBodyLength / 2) - (hipLength / 2);
-    hip.position.z = hipDepth / 2;
-
-    robotBody.add(hip);
-    rightHip = hip;
+    if(isLeft){
+        leftHip = hip;
+    }else{
+        rightHip = hip;
+    }
 
 }
 
@@ -90,8 +77,8 @@ function drawRightLeg(){
 function drawRobot({x, y, z}, scene){
 
     drawBody({x, y, z}, scene);
-    drawLeftHip();
-    drawRightHip();
+    drawHip(false);
+    drawHip(true);
     drawLeftLeg();
     drawRightLeg();
 
