@@ -4,6 +4,7 @@ let hipWidth, hipLength, hipDepth;
 let legWidth, legLength, legDepth;
 let robotBody, leftHip, rightHip, leftLeg, rightLeg, leftFoot, rightFoot;
 let footWidth, footLength, footDepth;
+let cannonBase, cannonBaseRadius;
 
 function drawBody({x, y, z}, scene){
 
@@ -85,6 +86,18 @@ function drawFoot(isLeft){
     
 }
 
+function drawCannon(){
+
+    cannonBaseRadius = 0.2;
+    const baseGeo = new THREE.SphereGeometry(cannonBaseRadius);
+    const cannonMat = new THREE.MeshStandardMaterial({ color: 0x54fcff });
+    cannonBase = new THREE.Mesh(baseGeo, cannonMat);
+    
+    robotBody.add(cannonBase);
+    cannonBase.position.z = (robotBodyDepth / 2);
+
+}
+
 function drawRobot({x, y, z}, scene){
 
     drawBody({x, y, z}, scene);
@@ -94,6 +107,7 @@ function drawRobot({x, y, z}, scene){
     drawLeg(false);
     drawFoot(true);
     drawFoot(false);
+    drawCannon();
 
 }
 
