@@ -1,124 +1,136 @@
-const robotBodyWidth = 0.75, robotBodyLength = robotBodyWidth, robotBodyDepth = robotBodyWidth * 1.5;
-const robotAngle = (10 * Math.PI) / 180;
-let hipWidth, hipLength, hipDepth;
-let legWidth, legLength, legDepth;
-let robotBody, leftHip, rightHip, leftLeg, rightLeg, leftFoot, rightFoot;
-let footWidth, footLength, footDepth;
-let cannonBase, cannonBaseRad, cannonBarrel, cannonBarrelRad, cannonBarrelHeight;
+class RobotModel{
 
-function drawBody({x, y, z}, scene){
+    constructor(x, y, z, scene){
+        this.robotBodyWidth = 0.75;
+        this.robotBodyLength = this.robotBodyWidth; 
+        this.robotBodyDepth = this.robotBodyWidth * 1.5;
+        this.robotAngle = (10 * Math.PI) / 180;
+        this.bodyX = x;
+        this.bodyY = y;
+        this.bodyZ = z;
+        this.cannonBaseRad = 0.2;
+        this.cannonBarrelRad = 0.1;
+        this.cannonBarrelHeight = 0.2;
+        this.scene = scene;
+    }
 
-    const bodyGeo = new THREE.BoxGeometry(robotBodyWidth, robotBodyLength, robotBodyDepth);
-    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x00FF00 });
-    const body = new THREE.Mesh(bodyGeo, bodyMat);
-    body.position.x = x;
-    body.position.y = y;
-    body.position.z = z;
+    drawBody(){
+
+        const bodyGeo = new THREE.BoxGeometry(
+            this.robotBodyWidth, 
+            this.robotBodyLength, 
+            this.robotBodyDepth);
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x00FF00 });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.position.x = this.bodyX;
+        body.position.y = this.bodyY;
+        body.position.z = this.bodyZ;
+        
+        body.rotateY(this.robotAngle);
+        this.scene.add(body);
+        this.robotBody = body;
     
-    body.rotateY(robotAngle);
-    scene.add(body);
-    robotBody = body;
-
-}
-
-function drawHip(isLeft){
-
-    hipWidth = robotBodyWidth / 2;
-    hipLength = robotBodyLength / 2;
-    hipDepth = robotBodyDepth / 4;
-    const hipGeo = new THREE.BoxGeometry(hipWidth, hipLength, hipDepth);
-    const hipMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
-    const hip = new THREE.Mesh(hipGeo, hipMat);
-
-    hip.position.x = (isLeft ? -1 : 1) * (robotBody.position.x + (robotBodyWidth / 2));
-    console.log(hip.position.x);
-    hip.position.y = -(robotBodyLength / 2) - (hipLength / 2);
-    hip.position.z = hipDepth / 2;
-
-    robotBody.add(hip);
-    if(isLeft){
-        leftHip = hip;
-    }else{
-        rightHip = hip;
-    }
-
-}
-
-function drawLeg(isLeft){
-
-    legWidth = hipWidth * 0.75;
-    legLength = hipLength * 2;
-    legDepth = hipDepth;
-    const hipGeo = new THREE.BoxGeometry(legWidth, legLength, legDepth);
-    const hipMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const leg = new THREE.Mesh(hipGeo, hipMat);
-
-    leg.position.y = -(hipLength / 2) - (legLength / 2);
-
-    if(isLeft){
-        leftHip.add(leg);
-        leftLeg = leg;
-    }else{
-        rightHip.add(leg);
-        rightLeg = leg;
-    }
-
-}
-
-function drawFoot(isLeft){
-
-    footWidth = legWidth * 2;
-    footLength = legLength / 3;
-    footDepth = legDepth * 1.5;
-    const footGeo = new THREE.BoxGeometry(footWidth, footLength, footDepth);
-    const footMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
-    const foot = new THREE.Mesh(footGeo, footMat);
-
-    foot.position.y = -(legLength / 2) - (footLength / 2);
-
-    if(isLeft){
-        leftLeg.add(foot);
-        leftFoot = foot;
-    }else{
-        rightLeg.add(foot);
-        rightFoot = foot;
     }
     
+    drawHip(isLeft){
+    
+        this.hipWidth = this.robotBodyWidth / 2;
+        this.hipLength = this.robotBodyLength / 2;
+        this.hipDepth = this.robotBodyDepth / 4;
+        const hipGeo = new THREE.BoxGeometry(this.hipWidth, this.hipLength, this.hipDepth);
+        const hipMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+        const hip = new THREE.Mesh(hipGeo, hipMat);
+    
+        hip.position.x = (isLeft ? -1 : 1) * (this.robotBody.position.x + (this.robotBodyWidth / 2));
+        console.log(hip.position.x);
+        hip.position.y = -(this.robotBodyLength / 2) - (this.hipLength / 2);
+        hip.position.z = this.hipDepth / 2;
+    
+        this.robotBody.add(hip);
+        if(isLeft){
+            this.leftHip = hip;
+        }else{
+            this.rightHip = hip;
+        }
+    
+    }
+    
+    drawLeg(isLeft){
+    
+        this.legWidth = this.hipWidth * 0.75;
+        this.legLength = this.hipLength * 2;
+        this.legDepth = this.hipDepth;
+        const hipGeo = new THREE.BoxGeometry(this.legWidth, this.legLength, this.legDepth);
+        const hipMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const leg = new THREE.Mesh(hipGeo, hipMat);
+    
+        leg.position.y = -(this.hipLength / 2) - (this.legLength / 2);
+    
+        if(isLeft){
+            this.leftHip.add(leg);
+            this.leftLeg = leg;
+        }else{
+            this.rightHip.add(leg);
+            this.rightLeg = leg;
+        }
+    
+    }
+    
+    drawFoot(isLeft){
+    
+        this.footWidth = this.legWidth * 2;
+        this.footLength = this.legLength / 3;
+        this.footDepth = this.legDepth * 1.5;
+        const footGeo = new THREE.BoxGeometry(this.footWidth, this.footLength, this.footDepth);
+        const footMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+        const foot = new THREE.Mesh(footGeo, footMat);
+    
+        foot.position.y = -(this.legLength / 2) - (this.footLength / 2);
+    
+        if(isLeft){
+            this.leftLeg.add(foot);
+            this.leftFoot = foot;
+        }else{
+            this.rightLeg.add(foot);
+            this.rightFoot = foot;
+        }
+        
+    }
+    
+    drawCannon(){
+    
+        const baseGeo = new THREE.SphereGeometry(this.cannonBaseRad);
+        const barrelGeo = new THREE.CylinderGeometry(
+            this.cannonBarrelRad, 
+            this.cannonBarrelRad, 
+            this.cannonBarrelHeight);
+        const cannonMat = new THREE.MeshStandardMaterial({ color: 0x54fcff });
+        const barrelMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+    
+        this.cannonBase = new THREE.Mesh(baseGeo, cannonMat);
+        this.cannonBarrel = new THREE.Mesh(barrelGeo, barrelMat);
+        this.cannonBarrel.rotateX((90 * Math.PI) / 180);
+    
+        this.robotBody.add(this.cannonBase);
+        this.cannonBase.add(this.cannonBarrel);
+        this.cannonBase.position.z = (this.robotBodyDepth / 2);
+        this.cannonBarrel.position.z = this.cannonBaseRad;
+    
+    }
+    
+    draw(){
+    
+        this.drawBody();
+        this.drawHip(false);
+        this.drawHip(true);
+        this.drawLeg(true);
+        this.drawLeg(false);
+        this.drawFoot(true);
+        this.drawFoot(false);
+        this.drawCannon();
+    
+    }
+
 }
 
-function drawCannon(){
-
-    cannonBaseRad = 0.2;
-    cannonBarrelRad = 0.1;
-    cannonBarrelHeight = 0.2;
-
-    const baseGeo = new THREE.SphereGeometry(cannonBaseRad);
-    const barrelGeo = new THREE.CylinderGeometry(cannonBarrelRad, cannonBarrelRad, cannonBarrelHeight);
-    const cannonMat = new THREE.MeshStandardMaterial({ color: 0x54fcff });
-    const barrelMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
-
-    cannonBase = new THREE.Mesh(baseGeo, cannonMat);
-    cannonBarrel = new THREE.Mesh(barrelGeo, barrelMat);
-    cannonBarrel.rotateX((90 * Math.PI) / 180);
-
-    robotBody.add(cannonBase);
-    cannonBase.add(cannonBarrel);
-    cannonBase.position.z = (robotBodyDepth / 2);
-    cannonBarrel.position.z = cannonBaseRad;
-
-}
-
-function drawRobot({x, y, z}, scene){
-
-    drawBody({x, y, z}, scene);
-    drawHip(false);
-    drawHip(true);
-    drawLeg(true);
-    drawLeg(false);
-    drawFoot(true);
-    drawFoot(false);
-    drawCannon();
-
-}
-
-export { drawRobot };
+export { RobotModel };
