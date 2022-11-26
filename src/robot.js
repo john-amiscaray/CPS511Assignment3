@@ -1,5 +1,7 @@
 class RobotModel{
 
+    static robotList = [];
+
     constructor(x, y, z, scene){
         this.robotBodyWidth = 0.75;
         this.robotBodyLength = this.robotBodyWidth; 
@@ -41,8 +43,7 @@ class RobotModel{
         const hipMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
         const hip = new THREE.Mesh(hipGeo, hipMat);
     
-        hip.position.x = (isLeft ? -1 : 1) * (this.robotBody.position.x + (this.robotBodyWidth / 2));
-        console.log(hip.position.x);
+        hip.position.x = (isLeft ? -1 : 1) * (this.robotBodyWidth / 2);
         hip.position.y = -(this.robotBodyLength / 2) - (this.hipLength / 2);
         hip.position.z = this.hipDepth / 2;
     
@@ -128,6 +129,7 @@ class RobotModel{
         this.drawFoot(true);
         this.drawFoot(false);
         this.drawCannon();
+        RobotModel.robotList.push(this);
     
     }
 
