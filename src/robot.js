@@ -1,4 +1,5 @@
 const robotDelZ = 5;
+const animationIncrement = (Math.PI / 32);
 
 class RobotModel{
 
@@ -17,6 +18,7 @@ class RobotModel{
         this.cannonBarrelHeight = 0.2;
         this.scene = scene;
         this.stepAnimationPosition = 0;
+        this.gunSpinAnimationPosition = 0;
         this.isLeftSideStep = true;
     }
 
@@ -44,11 +46,11 @@ class RobotModel{
         const hipMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
         const hip = new THREE.Mesh(hipGeo, hipMat);
     
-        hip.position.x = (isLeft ? -1 : 1) * (this.robotBodyWidth / 2);
-        hip.position.y = -(this.robotBodyLength / 2) - (this.hipLength / 2);
-        hip.position.z = this.hipDepth / 2;
+        hip.position.x = (isLeft ? 0 : (-this.robotBodyWidth)) + (this.robotBody.position.x + (this.robotBodyWidth / 2));
+        hip.position.y = this.robotBody.position.y + -(this.robotBodyLength / 2) - (this.hipLength / 2);
+        hip.position.z = this.robotBody.position.z + (this.hipDepth / 2);
     
-        this.robotBody.add(hip);
+        this.scene.add(hip);
         if(isLeft){
             this.leftHip = hip;
         }else{
@@ -126,7 +128,7 @@ class RobotModel{
     }
 
     stepAnimation(){
-        this.stepAnimationPosition += (Math.PI / 32);
+        this.stepAnimationPosition += animationIncrement;
         let theta = -Math.abs(Math.sin(this.stepAnimationPosition)) * (Math.PI / 2);
         let hip = this.isLeftSideStep ? this.leftHip : this.rightHip;
         hip.setRotationFromEuler(
@@ -138,9 +140,20 @@ class RobotModel{
         }
     }
 
-    static robotStepAnimate(){
+    gunSpinAnimation(){
+
+        this.gunSpinAnimationPosition += animationIncrement;
+        let theta = Math.sin(this.gunSpinAnimationPosition) * (Math.PI / 4);
+        this.robotBody.setRotationFromEuler(
+            new THREE.Euler(0, theta)
+        );
+
+    }
+
+    static robotAnimate(){
         RobotModel.robotList.forEach(robot => {
             robot.stepAnimation();
+            robot.gunSpinAnimation();
         });
     }
     
@@ -157,13 +170,15 @@ class RobotModel{
     
         RobotModel.robotList.forEach(robot => {
             robot.robotBody.position.z += 0.1;
+            robot.leftHip.position.z += 0.1;
+            robot.rightHip.position.z += 0.1;
         });
     }
 
     static animateAll(scene){
 
         RobotModel.moveRobotsForward(scene);
-        RobotModel.robotStepAnimate();
+        RobotModel.robotAnimate();
 
     }
 
