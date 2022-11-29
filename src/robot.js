@@ -160,9 +160,9 @@ class RobotModel{
                 radius: self.cannonBarrelRad, 
                 scene: self.scene, 
                 color: 0xFF0000, 
-                x: this.bodyX, 
-                y: this.bodyY, 
-                z: this.bodyZ,
+                x: this.robotBody.position.x, 
+                y: this.robotBody.position.y,
+                z: this.robotBody.position.z,
                 angle: Euler.y
             });
             bullet.draw();
