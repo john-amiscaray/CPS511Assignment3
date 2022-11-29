@@ -1,5 +1,6 @@
 import { RobotModel } from "./robot.js";
 import { getRandomInRange } from "./util.js";
+import { Bullet } from "./bullet.js";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -31,9 +32,10 @@ function robotSpawn(){
 function animate(){
     requestAnimationFrame(animate);
     RobotModel.animateAll(scene);
+    Bullet.animateAll();
     renderer.render(scene, camera);
 }
 
 animate();
 setInterval(robotSpawn, 1500);
-//robotSpawn();
+robotSpawn();
