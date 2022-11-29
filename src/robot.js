@@ -1,3 +1,5 @@
+const robotDelZ = 5;
+
 class RobotModel{
 
     static robotList = [];
@@ -134,6 +136,35 @@ class RobotModel{
         if(theta > -epsilon && theta < epsilon){
             this.isLeftSideStep = !this.isLeftSideStep;
         }
+    }
+
+    static robotStepAnimate(){
+        RobotModel.robotList.forEach(robot => {
+            robot.stepAnimation();
+        });
+    }
+    
+    static moveRobotsForward(scene){
+        RobotModel.robotList.forEach(robot => {
+            if(robot.robotBody.position.z > robotDelZ){
+                scene.remove(robot.robotBody);
+            }
+        });
+        RobotModel.robotList = RobotModel.robotList
+        .filter(robot => { 
+            return !(robot.robotBody.position.z > robotDelZ) 
+        });
+    
+        RobotModel.robotList.forEach(robot => {
+            robot.robotBody.position.z += 0.1;
+        });
+    }
+
+    static animateAll(scene){
+
+        RobotModel.moveRobotsForward(scene);
+        RobotModel.robotStepAnimate();
+
     }
 
 }

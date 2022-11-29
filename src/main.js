@@ -11,7 +11,6 @@ pointLight.position.set(0,7,-5);
 
 const lightHelper = new THREE.PointLightHelper(pointLight);
 const sunLight = new THREE.HemisphereLight(0x404040, 0xFFFFFF, 0.5);
-const robotDelZ = 5;
 
 scene.add(lightHelper);
 
@@ -29,32 +28,9 @@ function robotSpawn(){
     robot.draw();
 }
 
-function robotStepAnimate(){
-    RobotModel.robotList.forEach(robot => {
-        robot.stepAnimation();
-    });
-}
-
-function moveRobotsForward(){
-    RobotModel.robotList.forEach(robot => {
-        if(robot.robotBody.position.z > robotDelZ){
-            scene.remove(robot.robotBody);
-        }
-    });
-    RobotModel.robotList = RobotModel.robotList
-    .filter(robot => { 
-        return !(robot.robotBody.position.z > robotDelZ) 
-    });
-
-    RobotModel.robotList.forEach(robot => {
-        robot.robotBody.position.z += 0.1;
-    });
-}
-
 function animate(){
     requestAnimationFrame(animate);
-    moveRobotsForward();
-    robotStepAnimate();
+    RobotModel.animateAll(scene);
     renderer.render(scene, camera);
 }
 
