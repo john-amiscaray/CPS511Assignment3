@@ -1,5 +1,7 @@
 class RobotModel{
 
+    static robotList = [];
+
     constructor(x, y, z, scene){
         this.robotBodyWidth = 0.75;
         this.robotBodyLength = this.robotBodyWidth; 
@@ -12,10 +14,11 @@ class RobotModel{
         this.cannonBarrelRad = 0.1;
         this.cannonBarrelHeight = 0.2;
         this.scene = scene;
+        this.stepAnimationPosition = 0;
+        this.isLeftSideStep = true;
     }
 
     drawBody(){
-
         const bodyGeo = new THREE.BoxGeometry(
             this.robotBodyWidth, 
             this.robotBodyLength, 
@@ -29,11 +32,9 @@ class RobotModel{
         body.rotateY(this.robotAngle);
         this.scene.add(body);
         this.robotBody = body;
-    
     }
     
     drawHip(isLeft){
-    
         this.hipWidth = this.robotBodyWidth / 2;
         this.hipLength = this.robotBodyLength / 2;
         this.hipDepth = this.robotBodyDepth / 4;
@@ -41,8 +42,7 @@ class RobotModel{
         const hipMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
         const hip = new THREE.Mesh(hipGeo, hipMat);
     
-        hip.position.x = (isLeft ? -1 : 1) * (this.robotBody.position.x + (this.robotBodyWidth / 2));
-        console.log(hip.position.x);
+        hip.position.x = (isLeft ? -1 : 1) * (this.robotBodyWidth / 2);
         hip.position.y = -(this.robotBodyLength / 2) - (this.hipLength / 2);
         hip.position.z = this.hipDepth / 2;
     
@@ -52,11 +52,9 @@ class RobotModel{
         }else{
             this.rightHip = hip;
         }
-    
     }
     
     drawLeg(isLeft){
-    
         this.legWidth = this.hipWidth * 0.75;
         this.legLength = this.hipLength * 2;
         this.legDepth = this.hipDepth;
@@ -73,11 +71,9 @@ class RobotModel{
             this.rightHip.add(leg);
             this.rightLeg = leg;
         }
-    
     }
     
     drawFoot(isLeft){
-    
         this.footWidth = this.legWidth * 2;
         this.footLength = this.legLength / 3;
         this.footDepth = this.legDepth * 1.5;
@@ -94,11 +90,9 @@ class RobotModel{
             this.rightLeg.add(foot);
             this.rightFoot = foot;
         }
-        
     }
     
     drawCannon(){
-    
         const baseGeo = new THREE.SphereGeometry(this.cannonBaseRad);
         const barrelGeo = new THREE.CylinderGeometry(
             this.cannonBarrelRad, 
@@ -115,11 +109,9 @@ class RobotModel{
         this.cannonBase.add(this.cannonBarrel);
         this.cannonBase.position.z = (this.robotBodyDepth / 2);
         this.cannonBarrel.position.z = this.cannonBaseRad;
-    
     }
     
     draw(){
-    
         this.drawBody();
         this.drawHip(false);
         this.drawHip(true);
@@ -128,7 +120,20 @@ class RobotModel{
         this.drawFoot(true);
         this.drawFoot(false);
         this.drawCannon();
-    
+        RobotModel.robotList.push(this);
+    }
+
+    stepAnimation(){
+        this.stepAnimationPosition += (Math.PI / 32);
+        let theta = -Math.abs(Math.sin(this.stepAnimationPosition)) * (Math.PI / 2);
+        let hip = this.isLeftSideStep ? this.leftHip : this.rightHip;
+        hip.setRotationFromEuler(
+            new THREE.Euler(theta)
+        );
+        let epsilon = 1e-9;
+        if(theta > -epsilon && theta < epsilon){
+            this.isLeftSideStep = !this.isLeftSideStep;
+        }
     }
 
 }
