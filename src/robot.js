@@ -1,9 +1,11 @@
+import { Bullet } from "./bullet.js";
+
 const robotDelZ = 5;
 const animationIncrement = (Math.PI / 32);
 
 class RobotModel{
 
-    static robotList = [];
+    static instances = [];
 
     constructor(x, y, z, scene){
         this.robotBodyWidth = 0.75;
@@ -19,6 +21,7 @@ class RobotModel{
         this.scene = scene;
         this.stepAnimationPosition = 0;
         this.gunSpinAnimationPosition = 0;
+        this.bulletFiringControl = 0;
         this.isLeftSideStep = true;
     }
 
@@ -124,7 +127,7 @@ class RobotModel{
         this.drawFoot(true);
         this.drawFoot(false);
         this.drawCannon();
-        RobotModel.robotList.push(this);
+        RobotModel.instances.push(this);
     }
 
     stepAnimation(){
@@ -141,34 +144,51 @@ class RobotModel{
     }
 
     gunSpinAnimation(){
-
         this.gunSpinAnimationPosition += animationIncrement;
         let theta = Math.sin(this.gunSpinAnimationPosition) * (Math.PI / 4);
         this.robotBody.setRotationFromEuler(
             new THREE.Euler(0, theta)
         );
+    }
 
+    shootAnimation(){
+        this.bulletFiringControl += 1;
+        if(this.bulletFiringControl % 50 === 0){
+            let self = this;
+            let Euler = this.robotBody.rotation;
+            let bullet = new Bullet({ 
+                radius: self.cannonBarrelRad, 
+                scene: self.scene, 
+                color: 0xFF0000, 
+                x: this.bodyX, 
+                y: this.bodyY, 
+                z: this.bodyZ,
+                angle: Euler.y
+            });
+            bullet.draw();
+        }
     }
 
     static robotAnimate(){
-        RobotModel.robotList.forEach(robot => {
+        RobotModel.instances.forEach(robot => {
             robot.stepAnimation();
             robot.gunSpinAnimation();
+            robot.shootAnimation();
         });
     }
     
     static moveRobotsForward(scene){
-        RobotModel.robotList.forEach(robot => {
+        RobotModel.instances.forEach(robot => {
             if(robot.robotBody.position.z > robotDelZ){
                 scene.remove(robot.robotBody);
             }
         });
-        RobotModel.robotList = RobotModel.robotList
+        RobotModel.instances = RobotModel.instances
         .filter(robot => { 
             return !(robot.robotBody.position.z > robotDelZ) 
         });
     
-        RobotModel.robotList.forEach(robot => {
+        RobotModel.instances.forEach(robot => {
             robot.robotBody.position.z += 0.1;
             robot.leftHip.position.z += 0.1;
             robot.rightHip.position.z += 0.1;
