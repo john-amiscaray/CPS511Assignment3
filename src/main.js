@@ -111,7 +111,7 @@ class InputController {
 };
 
 class FirstPersonCamera {
-    constructor(camera, objects) {
+    constructor(camera) {
       this.camera_ = camera;
       this.input_ = new InputController();
       this.rotation_ = new THREE.Quaternion();
@@ -120,23 +120,19 @@ class FirstPersonCamera {
       this.phiSpeed_ = 8;
       this.theta_ = 0;
       this.thetaSpeed_ = 5;
-      this.headBobActive_ = false;
-      this.headBobTimer_ = 0;
-      //this.objects_ = objects;
     }
   
     update(timeElapsedS) {
       this.updateRotation_(timeElapsedS);
       this.updateCamera_(timeElapsedS);
       this.updateTranslation_(timeElapsedS);
-      this.updateHeadBob_(timeElapsedS);
       this.input_.update(timeElapsedS);
     }
   
     updateCamera_(_) {
       this.camera_.quaternion.copy(this.rotation_);
       this.camera_.position.copy(this.translation_);
-      this.camera_.position.y += Math.sin(this.headBobTimer_ * 10) * 1.5;
+      //this.camera_.position.y += Math.sin(this.headBobTimer_ * 10) * 1.5;
   
       const forward = new THREE.Vector3(0, 0, -1);
       forward.applyQuaternion(this.rotation_);
@@ -149,29 +145,7 @@ class FirstPersonCamera {
       let closest = forward;
       const result = new THREE.Vector3();
       const ray = new THREE.Ray(this.translation_, dir);
-      /*
-      for (let i = 0; i < this.objects_.length; ++i) {
-        if (ray.intersectBox(this.objects_[i], result)) {
-          if (result.distanceTo(ray.origin) < closest.distanceTo(ray.origin)) {
-            closest = result.clone();
-          }
-        }
-      }*/
-  
       this.camera_.lookAt(closest);
-    }
-  
-    updateHeadBob_(timeElapsedS) {
-      if (this.headBobActive_) {
-        const wavelength = Math.PI;
-        const nextStep = 1 + Math.floor(((this.headBobTimer_ + 0.000001) * 10) / wavelength);
-        const nextStepTime = nextStep * wavelength / 10;
-        this.headBobTimer_ = Math.min(this.headBobTimer_ + timeElapsedS, nextStepTime);
-  
-        if (this.headBobTimer_ == nextStepTime) {
-          this.headBobActive_ = false;
-        }
-      }
     }
   
     updateTranslation_(timeElapsedS) {
@@ -191,17 +165,11 @@ class FirstPersonCamera {
   
       this.translation_.add(forward);
       this.translation_.add(left);
-  
-      if (forwardVelocity != 0 || strafeVelocity != 0) {
-        this.headBobActive_ = true;
-      }
     }
   
     updateRotation_(timeElapsedS) {
       const xh = this.input_.current_.mouseXDelta / window.innerWidth;
       const yh = this.input_.current_.mouseYDelta / window.innerHeight;
-      //console.log("this.input_.current_.mouseXDelta: " + this.input_.current_.mouseXDelta)
-      //console.log("this.input_.current_.mouseYDelta: " + this.input_.current_.mouseYDelta)
   
       this.phi_ += -xh * this.phiSpeed_;
       this.theta_ = clamp(this.theta_ + -yh * this.thetaSpeed_, -Math.PI / 3, Math.PI / 3);
@@ -219,25 +187,20 @@ class FirstPersonCamera {
     }
   }
 
-class FirstPersonCameraDemo {
+class FirstPersonCameraController {
     constructor() {
       this.initialize_();
     }
   
     initialize_() {
       this.initializeRenderer_();
-      //this.initializeLights_();
-      //this.initializeScene_();
-      //this.initializePostFX_();
-      this.initializeDemo_();
-  
+      this.run_();
       this.previousRAF_ = null;
       this.raf_();
       this.onWindowResize_();
     }
   
-    initializeDemo_() {
-      //this.fpsCamera_ = new FirstPersonCamera(this.camera_, this.objects_);
+    run_() {
       this.fpsCamera_ = new FirstPersonCamera(camera, this.objects_);
     }
 
@@ -252,9 +215,7 @@ class FirstPersonCameraDemo {
         const far = 1000.0;
         this.camera_ = new THREE.PerspectiveCamera(fov, aspect, near, far);
         this.camera_.position.set(0, 2, 0);
-    
         this.scene_ = new THREE.Scene();
-    
         this.uiCamera_ = new THREE.OrthographicCamera(
             -1, 1, 1 * aspect, -1 * aspect, 1, 1000);
         this.uiScene_ = new THREE.Scene();
@@ -264,11 +225,9 @@ class FirstPersonCameraDemo {
   onWindowResize_() {
     this.camera_.aspect = window.innerWidth / window.innerHeight;
     this.camera_.updateProjectionMatrix();
-
     this.uiCamera_.left = -this.camera_.aspect;
     this.uiCamera_.right = this.camera_.aspect;
     this.uiCamera_.updateProjectionMatrix();
-
     this.threejs_.setSize(window.innerWidth, window.innerHeight);
   }
 
@@ -336,5 +295,5 @@ robotSpawn();
 let _APP = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-  _APP = new FirstPersonCameraDemo();
+  _APP = new FirstPersonCameraController();
 });
