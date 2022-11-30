@@ -14,72 +14,6 @@ const KEYS = {
     return Math.min(Math.max(x, a), b);
   }
 
-/*
-class InputController {
-    constructor(target) {
-        this.target_ = target || document;
-        this.initialize_();    
-      }
-
-    initialize_(){
-        this.current_ = {
-            leftButton: false,
-            mouseX: 0,
-            mouseY: 0
-        };
-        this.pervious_ = null;
-        document.addEventListener('mousedown', (e) => this.onMouseDown_(e), false);
-        document.addEventListener('mouseup', (e) => this.onMouseDown_(e), false);
-    }
-    onMouseDown_(e) {
-        switch(e.button) {
-            case 0: {
-                this.current_.leftButton = true;
-                break;
-            }
-            case 2: {
-                this.current_.rightButton = true;
-                break;
-            }
-        }
-    }
-    onMouseUp_(e) {
-        switch(e.button) {
-            case 0: {
-                this.current_.leftButton = false;
-                break;
-            }
-            case 2: {
-                this.current_.rightButton = false;
-                break;
-            }
-        }
-    }
-    onMouseMove_(e) {
-        this.current_.mouseX = e.pageX - window.innerWidth / 2;
-        this.current_.mouseY = e.pageY - window.innerWidth / 2;
-
-        if (this.previous_ === null) {
-            this.previous_ = {...this.current_};
-        }
-
-        this.current_.mouseXDelta = this.current_.mouseX - this.previous_.mouseX;
-        this.current_.mouseYDelta = this.current_.mouseY - this.previous_.mouseY;
-    }
-
-    update(_) {
-        if (this.previous_ !== null) {
-            this.current_.mouseXDelta = this.current_.mouseX - this.previous_.mouseX;
-            this.current_.mouseYDelta = this.current_.mouseY - this.previous_.mouseY;
-      
-            console.log("this.current_.mouseX: " + this.current_.mouseX)
-            console.log("this.current_.mouseY: " + this.current_.mouseY)
-      
-            this.previous_ = {...this.current_};
-        }
-      }
-};*/
-
 class InputController {
     constructor(target) {
       this.target_ = target || document;
@@ -303,7 +237,8 @@ class FirstPersonCameraDemo {
     }
   
     initializeDemo_() {
-      this.fpsCamera_ = new FirstPersonCamera(this.camera_, this.objects_);
+      //this.fpsCamera_ = new FirstPersonCamera(this.camera_, this.objects_);
+      this.fpsCamera_ = new FirstPersonCamera(camera, this.objects_);
     }
 
     initializeRenderer_() {
