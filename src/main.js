@@ -1,7 +1,7 @@
 import { RobotModel } from "./robot.js";
 import { getRandomInRange } from "./util.js";
 import { Bullet } from "./bullet.js";
-
+import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 
 class InputController {
     contructor() {
@@ -54,9 +54,14 @@ class InputController {
         this.current_.mouseYDelta = this.current_.mouseY - this.previous_.mouseY;
     }
 
-    update() {
-        //pass
-    }
+    update(_) {
+        if (this.previous_ !== null) {
+          this.current_.mouseXDelta = this.current_.mouseX - this.previous_.mouseX;
+          this.current_.mouseYDelta = this.current_.mouseY - this.previous_.mouseY;
+    
+          this.previous_ = {...this.current_};
+        }
+      }
 }
 
 class FirstPersonCamera {
@@ -108,15 +113,15 @@ class FirstPersonCameraDemo {
     }
   
     initialize_() {
-      this.initializeRenderer_();
-      this.initializeLights_();
-      this.initializeScene_();
-      this.initializePostFX_();
+      //this.initializeRenderer_();
+      //this.initializeLights_();
+      //this.initializeScene_();
+      //this.initializePostFX_();
       this.initializeDemo_();
   
-      this.previousRAF_ = null;
-      this.raf_();
-      this.onWindowResize_();
+      //this.previousRAF_ = null;
+      //this.raf_();
+      //this.onWindowResize_();
     }
   
     initializeDemo_() {
