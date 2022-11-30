@@ -1,3 +1,5 @@
+const bulletDelZ = 5;
+
 class Bullet{
 
     static instances = [];
@@ -33,6 +35,14 @@ class Bullet{
     static animateAll(){
         Bullet.instances.forEach(bullet => {
             bullet.animate();
+        });
+        Bullet.instances.forEach(bullet => {
+            if(bullet.mesh.position.z > bulletDelZ){
+                bullet.scene.remove(bullet.mesh);
+            }
+        });
+        Bullet.instances = Bullet.instances.filter(bullet => {
+            return !(bullet.mesh.position.z > bulletDelZ)
         });
     }
 

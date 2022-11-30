@@ -181,6 +181,12 @@ class RobotModel{
         RobotModel.instances.forEach(robot => {
             if(robot.robotBody.position.z > robotDelZ){
                 scene.remove(robot.robotBody);
+                scene.remove(robot.leftHip);
+                scene.remove(robot.rightHip);
+                scene.remove(robot.leftLeg);
+                scene.remove(robot.rightLeg);
+                scene.remove(robot.rightFoot);
+                scene.remove(robot.leftFoot);
             }
         });
         RobotModel.instances = RobotModel.instances
