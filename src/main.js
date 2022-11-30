@@ -49,12 +49,86 @@ class InputController {
         if (this.previous_ === null) {
             this.previous_ = {...this.current_};
         }
+
+        this.current_.mouseXDelta = this.current_.mouseX - this.previous_.mouseX;
+        this.current_.mouseYDelta = this.current_.mouseY - this.previous_.mouseY;
     }
 
     update() {
         //pass
     }
 }
+
+class FirstPersonCamera {
+    constructor(camera, objects) {
+        this.camera_ = camera;
+        this.input_ = new InputController();
+        this.rotation_ = new THREE.Quaternion();
+        this.translation_ = new THREE.Vector3(0, 2, 0);
+        this.phi_ = 0;
+        this.phiSpeed_ = 8;
+        this.theta_ = 0;
+        this.thetaSpeed_ = 5;
+        this.headBobActive_ = false;
+        this.headBobTimer_ = 0;
+        this.objects_ = objects;
+    }
+
+    update(timeElapsedS) {
+        this.updateRotation_(timeElapsedS);
+        this.updateCamera_(timeElapsedS);
+        this.updateTranslation_(timeElapsedS);
+        this.updateHeadBob_(timeElapsedS);
+        this.input_.update(timeElapsedS);
+    }
+
+    updateRotation_(timeElapsedS) {
+        const xh = this.input_.current_.mouseXDelta / window.innerWidth;
+        const yh = this.input_.current_.mouseYDelta / window.innerHeight;
+    
+        this.phi_ += -xh * this.phiSpeed_;
+        this.theta_ = clamp(this.theta_ + -yh * this.thetaSpeed_, -Math.PI / 3, Math.PI / 3);
+    
+        const qx = new THREE.Quaternion();
+        qx.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.phi_);
+        const qz = new THREE.Quaternion();
+        qz.setFromAxisAngle(new THREE.Vector3(1, 0, 0), this.theta_);
+    
+        const q = new THREE.Quaternion();
+        q.multiply(qx);
+        q.multiply(qz);
+    
+        this.rotation_.copy(q);
+    }
+}
+
+class FirstPersonCameraDemo {
+    constructor() {
+      this.initialize_();
+    }
+  
+    initialize_() {
+      this.initializeRenderer_();
+      this.initializeLights_();
+      this.initializeScene_();
+      this.initializePostFX_();
+      this.initializeDemo_();
+  
+      this.previousRAF_ = null;
+      this.raf_();
+      this.onWindowResize_();
+    }
+  
+    initializeDemo_() {
+      this.fpsCamera_ = new FirstPersonCamera(this.camera_, this.objects_);
+    }
+
+    step_(timeElapsed) {
+        const timeElapsedS = timeElapsed * 0.001;
+        this.fpsCamera_.update(timeElapsedS);
+      }
+  }
+
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -93,3 +167,9 @@ function animate(){
 animate();
 setInterval(robotSpawn, 1500);
 robotSpawn();
+
+let _APP = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  _APP = new FirstPersonCameraDemo();
+});
