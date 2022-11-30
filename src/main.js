@@ -2,6 +2,60 @@ import { RobotModel } from "./robot.js";
 import { getRandomInRange } from "./util.js";
 import { Bullet } from "./bullet.js";
 
+
+class InputController {
+    contructor() {
+        this.initialize_();
+    }
+
+    initialize_(){
+        this.current_ = {
+            leftButton: false,
+            mouseX: 0,
+            mouseY: 0
+        };
+        this.pervious_ = null;
+        document.addEventListener('mousedown', (e) => this.onMouseDown_(e), false);
+        document.addEventListener('mouseup', (e) => this.onMouseDown_(e), false);
+    }
+    onMouseDown_(e) {
+        switch(e.button) {
+            case 0: {
+                this.current_.leftButton = true;
+                break;
+            }
+            case 2: {
+                this.current_.rightButton = true;
+                break;
+            }
+        }
+    }
+    onMouseUp_(e) {
+        switch(e.button) {
+            case 0: {
+                this.current_.leftButton = false;
+                break;
+            }
+            case 2: {
+                this.current_.rightButton = false;
+                break;
+            }
+        }
+    }
+    onMouseMove_(e) {
+        this.current_.mouseX = e.pageX - window.innerWidth / 2;
+        this.current_.mouseY = e.pageY - window.innerWidth / 2;
+
+        if (this.previous_ === null) {
+            this.previous_ = {...this.current_};
+        }
+    }
+
+    update() {
+        //pass
+    }
+}
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
