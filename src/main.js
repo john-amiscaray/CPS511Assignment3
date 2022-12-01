@@ -53,19 +53,18 @@ function shootBullet() {
   camera.getWorldDirection( playerDirection );
   let Euler_ = new THREE.Euler( 0, 0, 0, 'XYZ' );
   Euler_.setFromVector3(playerDirection);
-  //let Euler = camera.rotation;
-  let scene_ = new THREE.Scene()
   let bullet = new Bullet({ 
-    radius: 500000, 
+    radius: 0.25, 
     scene: scene, 
     color: 0x00FF00, 
     x: camera.position.x, 
     y: camera.position.y,
     z: camera.position.z,
-    angle: Euler_.y
+    angle: Euler_
   });
   bullet.draw();
   console.log("Bullet");
+  //console.log("Euler_: " + Euler_.y);
 }
 
 class InputController {
