@@ -1,24 +1,78 @@
 import { RobotModel } from "./robot.js";
 import { getRandomInRange } from "./util.js";
 import { Bullet } from "./bullet.js";
-import * as THREE from 'https://cdn.skypack.dev/three@0.136';
+//import * as THREE from 'https://cdn.skypack.dev/three@0.136';
+import * as THREE from 'three';
 
 const KEYS = {
-    'a': 65,
-    's': 83,
-    'w': 87,
-    'd': 68,
-  };
+  'a': 65,
+  's': 83,
+  'w': 87,
+  'd': 68,
+};
   
-  function clamp(x, a, b) {
-    return Math.min(Math.max(x, a), b);
+function clamp(x, a, b) {
+  return Math.min(Math.max(x, a), b);
+}
+
+/*
+function throwBall() {
+  const sphere = spheres[ sphereIdx ];
+
+  camera.getWorldDirection( playerDirection );
+  sphere.collider.center.copy( playerCollider.end ).addScaledVector( playerDirection, playerCollider.radius * 1.5 );
+
+  // throw the ball with more force if we hold the button longer, and if we move forward
+  const impulse = 15 + 30 * ( 1 - Math.exp( ( mouseTime - performance.now() ) * 0.001 ) );
+  sphere.velocity.copy( playerDirection ).multiplyScalar( impulse );
+  sphere.velocity.addScaledVector( playerVelocity, 2 );
+  sphereIdx = ( sphereIdx + 1 ) % spheres.length;
+
+
+  shootAnimation(){
+      this.bulletFiringControl += 1;
+      if(this.bulletFiringControl % 50 === 0){
+          let self = this;
+          let Euler = this.robotBody.rotation;
+          let bullet = new Bullet({ 
+              radius: self.cannonBarrelRad, 
+              scene: self.scene, 
+              color: 0xFF0000, 
+              x: this.robotBody.position.x, 
+              y: this.robotBody.position.y,
+              z: this.robotBody.position.z,
+              angle: Euler.y
+          });
+          bullet.draw();
+      }
   }
+}*/
+
+function shootBullet() {
+  let playerDirection = new THREE.Vector3();
+  camera.getWorldDirection( playerDirection );
+  let Euler_ = new THREE.Euler( 0, 0, 0, 'XYZ' );
+  Euler_.setFromVector3(playerDirection);
+  //let Euler = camera.rotation;
+  let scene_ = new THREE.Scene()
+  let bullet = new Bullet({ 
+    radius: 500000, 
+    scene: scene, 
+    color: 0x00FF00, 
+    x: camera.position.x, 
+    y: camera.position.y,
+    z: camera.position.z,
+    angle: Euler_.y
+  });
+  bullet.draw();
+  console.log("Bullet");
+}
 
 class InputController {
-    constructor(target) {
-      this.target_ = target || document;
-      this.initialize_();    
-    }
+  constructor(target) {
+    this.target_ = target || document;
+    this.initialize_();    
+  }
   
     initialize_() {
       this.current_ = {
@@ -57,6 +111,9 @@ class InputController {
       switch (e.button) {
         case 0: {
           this.current_.leftButton = true;
+          console.log("leftButton down");
+          shootBullet();
+
           break;
         }
         case 2: {
@@ -102,8 +159,8 @@ class InputController {
         this.current_.mouseXDelta = this.current_.mouseX - this.previous_.mouseX;
         this.current_.mouseYDelta = this.current_.mouseY - this.previous_.mouseY;
   
-        console.log("this.current_.mouseX: " + this.current_.mouseX)
-        console.log("this.current_.mouseY: " + this.current_.mouseY)
+        //console.log("this.current_.mouseX: " + this.current_.mouseX)
+        //console.log("this.current_.mouseY: " + this.current_.mouseY)
   
         this.previous_ = {...this.current_};
       }
