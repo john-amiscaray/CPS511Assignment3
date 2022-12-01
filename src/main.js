@@ -5,13 +5,18 @@ import { Bullet } from "./bullet.js";
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({
+    canvas: document.querySelector('#bg')
+});
 
 const pointLight = new THREE.PointLight(0xffffff);
 pointLight.position.set(0,7,-5);
 
 const lightHelper = new THREE.PointLightHelper(pointLight);
 const sunLight = new THREE.HemisphereLight(0x404040, 0xFFFFFF, 0.5);
+const backgroundTexture = new THREE.TextureLoader().load('../assets/background.png');
+
+scene.background = backgroundTexture;
 
 scene.add(lightHelper);
 

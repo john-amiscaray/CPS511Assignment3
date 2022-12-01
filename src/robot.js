@@ -30,12 +30,11 @@ class RobotModel{
             this.robotBodyWidth, 
             this.robotBodyLength, 
             this.robotBodyDepth);
-        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x00FF00 });
+        const bodyMat = new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load('../assets/robotTexture.png') });
         const body = new THREE.Mesh(bodyGeo, bodyMat);
         body.position.x = this.bodyX;
         body.position.y = this.bodyY;
         body.position.z = this.bodyZ;
-        
         body.rotateY(this.robotAngle);
         this.scene.add(body);
         this.robotBody = body;
@@ -46,7 +45,7 @@ class RobotModel{
         this.hipLength = this.robotBodyLength / 2;
         this.hipDepth = this.robotBodyDepth / 4;
         const hipGeo = new THREE.BoxGeometry(this.hipWidth, this.hipLength, this.hipDepth);
-        const hipMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+        const hipMat = new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load('../assets/robotHipTexture.png') });
         const hip = new THREE.Mesh(hipGeo, hipMat);
     
         hip.position.x = (isLeft ? 0 : (-this.robotBodyWidth)) + (this.robotBody.position.x + (this.robotBodyWidth / 2));
