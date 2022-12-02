@@ -28,8 +28,9 @@ class Bullet{
     }
 
     animate(){
-        this.mesh.position.x += this.pathAxis.x;
-        this.mesh.position.z += Bullet.speed;
+        this.mesh.position.x += this.angle.x;
+        this.mesh.position.y += this.angle.y;
+        this.mesh.position.z += this.angle.z;
     }
 
     static animateAll(){
