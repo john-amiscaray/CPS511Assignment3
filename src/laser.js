@@ -28,8 +28,16 @@ class Laser{
 
         // BoxGeometry rotation
         // Requires limitation of player's cannon rotation 
-        this.mesh.rotateX(this.angle.y * 1.05); //up down
-        this.mesh.rotateY(-this.angle.x * 1.055); // left right
+        console.log("rotateX: " + (this.angle.y * (180/Math.PI)));
+        let rotateX = this.angle.y;
+        if (this.angle.y > (15*Math.PI/180) && this.angle.y < (30*Math.PI/180)) {
+            rotateX = rotateX*1.05;
+        } else if (this.angle.y >= (30*Math.PI/180)) {
+            rotateX = rotateX*1.075;
+        }
+
+        this.mesh.rotateX(rotateX); //up down ; this.angle.y * 1.05
+        this.mesh.rotateY(Math.sin(-this.angle.x) * 1.055); // left right ; -this.angle.x * 1.055
         //this.mesh.rotateZ(this.angle.z); //yaw
 
         this.scene.add(this.mesh);
