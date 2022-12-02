@@ -1,6 +1,7 @@
 import { RobotModel } from "./robot.js";
 import { getRandomInRange } from "./util.js";
 import { Bullet } from "./bullet.js";
+import { Laser } from "./laser.js";
 //import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 import * as THREE from 'three';
 
@@ -35,7 +36,7 @@ function throwBall() {
           let self = this;
           let Euler = this.robotBody.rotation;
           let bullet = new Bullet({ 
-              radius: self.cannonBarrelRad, 
+              radius: self.cannonBarrelRad, Laser
               scene: self.scene, 
               color: 0xFF0000, 
               x: this.robotBody.position.x, 
@@ -48,12 +49,12 @@ function throwBall() {
   }
 }*/
 
-function shootBullet() {
+function shootLaser() {
   let playerDirection = new THREE.Vector3();
   camera.getWorldDirection( playerDirection );
   let Euler_ = new THREE.Euler( 0, 0, 0, 'XYZ' );
   Euler_.setFromVector3(playerDirection);
-  let bullet = new Bullet({ 
+  let laser = new Laser({ 
     radius: 0.25, 
     scene: scene, 
     color: 0x00FF00, 
@@ -62,9 +63,8 @@ function shootBullet() {
     z: camera.position.z,
     angle: Euler_
   });
-  bullet.draw();
-  console.log("Bullet");
-  //console.log("Euler_: " + Euler_.y);
+  laser.draw();
+  console.log("LASER");
 }
 
 class InputController {
@@ -111,7 +111,7 @@ class InputController {
         case 0: {
           this.current_.leftButton = true;
           console.log("leftButton down");
-          shootBullet();
+          shootLaser();
 
           break;
         }
@@ -341,6 +341,7 @@ function animate(){
     requestAnimationFrame(animate);
     RobotModel.animateAll(scene);
     Bullet.animateAll();
+    Laser.animateAll();
     renderer.render(scene, camera);
 }
 
