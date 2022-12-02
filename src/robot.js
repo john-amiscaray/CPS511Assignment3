@@ -155,7 +155,10 @@ class RobotModel{
         this.bulletFiringControl += 1;
         if(this.bulletFiringControl % 50 === 0){
             let self = this;
-            let Euler = this.robotBody.rotation;
+            let accuracy = 7;
+            let dir = new THREE.Vector3(Math.random()*accuracy-accuracy/2, 1.5 + Math.random()*accuracy-accuracy/2, Math.random()*accuracy-accuracy/2);
+            let Euler = this.robotBody.position;
+            dir.subVectors( dir, Euler ).normalize();
             let bullet = new Bullet({ 
                 radius: self.cannonBarrelRad, 
                 scene: self.scene, 
@@ -163,7 +166,7 @@ class RobotModel{
                 x: this.robotBody.position.x, 
                 y: this.robotBody.position.y,
                 z: this.robotBody.position.z,
-                angle: Euler.y
+                angle: dir
             });
             bullet.draw();
         }
@@ -181,6 +184,12 @@ class RobotModel{
         RobotModel.instances.forEach(robot => {
             if(robot.robotBody.position.z > robotDelZ){
                 scene.remove(robot.robotBody);
+                scene.remove(robot.leftHip);
+                scene.remove(robot.rightHip);
+                scene.remove(robot.leftLeg);
+                scene.remove(robot.rightLeg);
+                scene.remove(robot.rightFoot);
+                scene.remove(robot.leftFoot);
             }
         });
         RobotModel.instances = RobotModel.instances
