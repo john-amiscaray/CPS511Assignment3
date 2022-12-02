@@ -1,4 +1,4 @@
-const bulletDelZ = 5;
+const laserDelZ = -50;
 
 class Laser{
 
@@ -16,9 +16,9 @@ class Laser{
     }
 
     draw(){
-        const bulletGeo = new THREE.SphereGeometry(this.radius);
-        const bulletMat = new THREE.MeshStandardMaterial({ color: this.color });
-        this.mesh = new THREE.Mesh(bulletGeo, bulletMat);
+        const laserGeo = new THREE.SphereGeometry(this.radius);
+        const laserMat = new THREE.MeshStandardMaterial({ color: this.color });
+        this.mesh = new THREE.Mesh(laserGeo, laserMat);
         Laser.instances.push(this);
         this.mesh.position.set(this.x, this.y, this.z);
         this.scene.add(this.mesh);
@@ -34,16 +34,16 @@ class Laser{
     }
 
     static animateAll(){
-        Laser.instances.forEach(bullet => {
-            bullet.animate();
+        Laser.instances.forEach(laser => {
+            laser.animate();
         });
-        Laser.instances.forEach(bullet => {
-            if(bullet.mesh.position.z > bulletDelZ){
-                bullet.scene.remove(bullet.mesh);
+        Laser.instances.forEach(laser => {
+            if(laser.mesh.position.z < laserDelZ){
+                laser.scene.remove(laser.mesh);
             }
         });
-        Laser.instances = Laser.instances.filter(bullet => {
-            return !(bullet.mesh.position.z > bulletDelZ)
+        Laser.instances = Laser.instances.filter(laser => {
+            return !(laser.mesh.position.z < laserDelZ)
         });
     }
 
