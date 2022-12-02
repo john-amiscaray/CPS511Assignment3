@@ -64,7 +64,8 @@ function shootLaser() {
     angle: Euler_
   });
   laser.draw();
-  console.log("LASER");
+
+
 }
 
 class InputController {
@@ -110,9 +111,8 @@ class InputController {
       switch (e.button) {
         case 0: {
           this.current_.leftButton = true;
-          console.log("leftButton down");
+          //console.log("leftButton down");
           shootLaser();
-
           break;
         }
         case 2: {
