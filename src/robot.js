@@ -155,8 +155,8 @@ class RobotModel{
         this.bulletFiringControl += 1;
         if(this.bulletFiringControl % 50 === 0){
             let self = this;
-            //let Euler = this.robotBody.rotation;
-            let dir = new THREE.Vector3();
+            let accuracy = 7;
+            let dir = new THREE.Vector3(Math.random()*accuracy-accuracy/2, 1.5 + Math.random()*accuracy-accuracy/2, Math.random()*accuracy-accuracy/2);
             let Euler = this.robotBody.position;
             dir.subVectors( dir, Euler ).normalize();
             let bullet = new Bullet({ 
