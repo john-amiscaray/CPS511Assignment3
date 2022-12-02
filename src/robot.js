@@ -155,7 +155,10 @@ class RobotModel{
         this.bulletFiringControl += 1;
         if(this.bulletFiringControl % 50 === 0){
             let self = this;
-            let Euler = this.robotBody.rotation;
+            //let Euler = this.robotBody.rotation;
+            let dir = new THREE.Vector3();
+            let Euler = this.robotBody.position;
+            dir.subVectors( dir, Euler ).normalize();
             let bullet = new Bullet({ 
                 radius: self.cannonBarrelRad, 
                 scene: self.scene, 
@@ -163,7 +166,7 @@ class RobotModel{
                 x: this.robotBody.position.x, 
                 y: this.robotBody.position.y,
                 z: this.robotBody.position.z,
-                angle: Euler.y
+                angle: dir
             });
             bullet.draw();
         }
