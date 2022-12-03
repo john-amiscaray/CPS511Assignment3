@@ -57,6 +57,12 @@ objLoader.load('../assets/cannon.obj', mesh => {
   mesh.position.y = 1;
   scene.add(mesh);
   cannon = mesh;
+  cannon.traverse(child => {
+    if(child.isMesh){
+      child.material = new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load('../assets/cannonTexture.png') });
+    }
+  });
+  scene.add(cannon);
   
 });
 
