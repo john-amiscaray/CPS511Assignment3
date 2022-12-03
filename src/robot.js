@@ -173,6 +173,19 @@ class RobotModel{
         }
     }
 
+    selfDestruct(){
+
+        this.scene.remove(this.robotBody);
+        this.scene.remove(this.leftHip);
+        this.scene.remove(this.rightHip);
+        this.scene.remove(this.leftLeg);
+        this.scene.remove(this.rightLeg);
+        this.scene.remove(this.rightFoot);
+        this.scene.remove(this.leftFoot);
+        RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+
+    }
+
     static robotAnimate(){
         RobotModel.instances.forEach(robot => {
             robot.stepAnimation();
@@ -184,20 +197,10 @@ class RobotModel{
     static moveRobotsForward(scene){
         RobotModel.instances.forEach(robot => {
             if(robot.robotBody.position.z > robotDelZ){
-                scene.remove(robot.robotBody);
-                scene.remove(robot.leftHip);
-                scene.remove(robot.rightHip);
-                scene.remove(robot.leftLeg);
-                scene.remove(robot.rightLeg);
-                scene.remove(robot.rightFoot);
-                scene.remove(robot.leftFoot);
+                robot.selfDestruct();
             }
         });
-        RobotModel.instances = RobotModel.instances
-        .filter(robot => { 
-            return !(robot.robotBody.position.z > robotDelZ) 
-        });
-    
+        
         RobotModel.instances.forEach(robot => {
             robot.robotBody.position.z += 0.1;
             robot.leftHip.position.z += 0.1;

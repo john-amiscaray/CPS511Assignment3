@@ -1,6 +1,7 @@
 import { RobotModel } from "./robot.js";
 import { getRandomInRange } from "./util.js";
 import { Bullet } from "./bullet.js";
+import { Laser } from "./laser.js";
 //import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
@@ -15,39 +16,6 @@ const KEYS = {
 function clamp(x, a, b) {
   return Math.min(Math.max(x, a), b);
 }
-
-/*
-function throwBall() {
-  const sphere = spheres[ sphereIdx ];
-
-  camera.getWorldDirection( playerDirection );
-  sphere.collider.center.copy( playerCollider.end ).addScaledVector( playerDirection, playerCollider.radius * 1.5 );
-
-  // throw the ball with more force if we hold the button longer, and if we move forward
-  const impulse = 15 + 30 * ( 1 - Math.exp( ( mouseTime - performance.now() ) * 0.001 ) );
-  sphere.velocity.copy( playerDirection ).multiplyScalar( impulse );
-  sphere.velocity.addScaledVector( playerVelocity, 2 );
-  sphereIdx = ( sphereIdx + 1 ) % spheres.length;
-
-
-  shootAnimation(){
-      this.bulletFiringControl += 1;
-      if(this.bulletFiringControl % 50 === 0){
-          let self = this;
-          let Euler = this.robotBody.rotation;
-          let bullet = new Bullet({ 
-              radius: self.cannonBarrelRad, 
-              scene: self.scene, 
-              color: 0xFF0000, 
-              x: this.robotBody.position.x, 
-              y: this.robotBody.position.y,
-              z: this.robotBody.position.z,
-              angle: Euler.y
-          });
-          bullet.draw();
-      }
-  }
-}*/
 
 let objLoader = new OBJLoader();
 let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
@@ -66,12 +34,12 @@ objLoader.load('../assets/cannon.obj', mesh => {
   
 });
 
-function shootBullet() {
+function shootLaser() {
   let playerDirection = new THREE.Vector3();
   camera.getWorldDirection( playerDirection );
   let Euler_ = new THREE.Euler( 0, 0, 0, 'XYZ' );
   Euler_.setFromVector3(playerDirection);
-  let bullet = new Bullet({ 
+  let laser = new Laser({ 
     radius: 0.25, 
     scene: scene, 
     color: 0x00FF00, 
@@ -80,9 +48,9 @@ function shootBullet() {
     z: cannon.position.z,
     angle: Euler_
   });
-  bullet.draw();
-  console.log("Bullet");
-  //console.log("Euler_: " + Euler_.y);
+  laser.draw();
+
+
 }
 
 class InputController {
@@ -128,9 +96,8 @@ class InputController {
       switch (e.button) {
         case 0: {
           this.current_.leftButton = true;
-          console.log("leftButton down");
-          shootBullet();
-
+          //console.log("leftButton down");
+          shootLaser();
           break;
         }
         case 2: {
@@ -364,6 +331,7 @@ function animate(){
     requestAnimationFrame(animate);
     RobotModel.animateAll(scene);
     Bullet.animateAll();
+    Laser.animateAll();
     renderer.render(scene, camera);
 }
 
