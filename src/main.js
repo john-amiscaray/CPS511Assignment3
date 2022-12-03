@@ -17,39 +17,6 @@ function clamp(x, a, b) {
   return Math.min(Math.max(x, a), b);
 }
 
-/*
-function throwBall() {
-  const sphere = spheres[ sphereIdx ];
-
-  camera.getWorldDirection( playerDirection );
-  sphere.collider.center.copy( playerCollider.end ).addScaledVector( playerDirection, playerCollider.radius * 1.5 );
-
-  // throw the ball with more force if we hold the button longer, and if we move forward
-  const impulse = 15 + 30 * ( 1 - Math.exp( ( mouseTime - performance.now() ) * 0.001 ) );
-  sphere.velocity.copy( playerDirection ).multiplyScalar( impulse );
-  sphere.velocity.addScaledVector( playerVelocity, 2 );
-  sphereIdx = ( sphereIdx + 1 ) % spheres.length;
-
-
-  shootAnimation(){
-      this.bulletFiringControl += 1;
-      if(this.bulletFiringControl % 50 === 0){
-          let self = this;
-          let Euler = this.robotBody.rotation;
-          let bullet = new Bullet({ 
-              radius: self.cannonBarrelRad, Laser
-              scene: self.scene, 
-              color: 0xFF0000, 
-              x: this.robotBody.position.x, 
-              y: this.robotBody.position.y,
-              z: this.robotBody.position.z,
-              angle: Euler.y
-          });
-          bullet.draw();
-      }
-  }
-}*/
-
 let objLoader = new OBJLoader();
 let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
 
