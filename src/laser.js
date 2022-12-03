@@ -20,7 +20,7 @@ class Laser{
     draw(){
         let laserHeight = 100;
         const laserGeo = new THREE.BoxGeometry( 0.25, 0.25, laserHeight );
-        const laserMat = new THREE.MeshLambertMaterial( { color: this.color, transparent: true } );
+        const laserMat = new THREE.MeshLambertMaterial( { transparent: true, map: new THREE.TextureLoader().load('../assets/laserTexture.png') } );
         this.mesh = new THREE.Mesh(laserGeo, laserMat);
         Laser.instances.push(this);
         this.mesh.position.x = this.angle.x;
