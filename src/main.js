@@ -4,6 +4,7 @@ import { Bullet } from "./bullet.js";
 import { Laser } from "./laser.js";
 //import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 import * as THREE from 'three';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 const KEYS = {
   'a': 65,
@@ -49,6 +50,23 @@ function throwBall() {
   }
 }*/
 
+let objLoader = new OBJLoader();
+let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
+
+objLoader.load('../assets/cannon.obj', mesh => {
+
+  mesh.position.y = 1;
+  scene.add(mesh);
+  cannon = mesh;
+  cannon.traverse(child => {
+    if(child.isMesh){
+      child.material = new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load('../assets/cannonTexture.png') });
+    }
+  });
+  scene.add(cannon);
+  
+});
+
 function shootLaser() {
   let playerDirection = new THREE.Vector3();
   camera.getWorldDirection( playerDirection );
@@ -58,9 +76,9 @@ function shootLaser() {
     radius: 0.25, 
     scene: scene, 
     color: 0x00FF00, 
-    x: camera.position.x, 
-    y: camera.position.y,
-    z: camera.position.z,
+    x: cannon.position.x, 
+    y: cannon.position.y,
+    z: cannon.position.z,
     angle: Euler_
   });
   laser.draw();
@@ -238,6 +256,11 @@ class FirstPersonCamera {
       const q = new THREE.Quaternion();
       q.multiply(qx);
       q.multiply(qz);
+
+      if(!isNaN(this.theta_) && cannon && this.theta_ != this.last_theta_){
+        cannon.rotation.x = cannonRotXInit + this.theta_;
+        cannon.rotation.z = this.phi_;
+      }
   
       this.rotation_.copy(q);
     }

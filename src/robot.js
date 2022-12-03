@@ -1,4 +1,5 @@
 import { Bullet } from "./bullet.js";
+import * as THREE from 'three';
 
 const robotDelZ = 5;
 const animationIncrement = (Math.PI / 32);
