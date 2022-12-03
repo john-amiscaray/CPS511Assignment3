@@ -3,6 +3,7 @@ import { getRandomInRange } from "./util.js";
 import { Bullet } from "./bullet.js";
 //import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 import * as THREE from 'three';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 const KEYS = {
   'a': 65,
@@ -353,3 +354,12 @@ let _APP = null;
 window.addEventListener('DOMContentLoaded', () => {
   _APP = new FirstPersonCameraController();
 });
+
+let objLoader = new OBJLoader();
+objLoader.load('../assets/cannon.obj', mesh => {
+
+  mesh.rotateZ(Math.PI / 2);
+  mesh.rotateX(-Math.PI / 2);
+  scene.add(mesh);
+  
+})

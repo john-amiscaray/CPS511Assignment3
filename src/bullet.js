@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 const bulletDelZ = 5;
 
 class Bullet{
