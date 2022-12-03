@@ -49,6 +49,17 @@ function throwBall() {
   }
 }*/
 
+let objLoader = new OBJLoader();
+let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
+
+objLoader.load('../assets/cannon.obj', mesh => {
+
+  mesh.position.y = 1;
+  scene.add(mesh);
+  cannon = mesh;
+  
+});
+
 function shootBullet() {
   let playerDirection = new THREE.Vector3();
   camera.getWorldDirection( playerDirection );
@@ -58,9 +69,9 @@ function shootBullet() {
     radius: 0.25, 
     scene: scene, 
     color: 0x00FF00, 
-    x: camera.position.x, 
-    y: camera.position.y,
-    z: camera.position.z,
+    x: cannon.position.x, 
+    y: cannon.position.y,
+    z: cannon.position.z,
     angle: Euler_
   });
   bullet.draw();
@@ -239,6 +250,11 @@ class FirstPersonCamera {
       const q = new THREE.Quaternion();
       q.multiply(qx);
       q.multiply(qz);
+
+      if(!isNaN(this.theta_) && cannon && this.theta_ != this.last_theta_){
+        cannon.rotation.x = cannonRotXInit + this.theta_;
+        cannon.rotation.z = this.phi_;
+      }
   
       this.rotation_.copy(q);
     }
@@ -354,12 +370,3 @@ let _APP = null;
 window.addEventListener('DOMContentLoaded', () => {
   _APP = new FirstPersonCameraController();
 });
-
-let objLoader = new OBJLoader();
-objLoader.load('../assets/cannon.obj', mesh => {
-
-  mesh.rotateZ(Math.PI / 2);
-  mesh.rotateX(-Math.PI / 2);
-  scene.add(mesh);
-  
-})
