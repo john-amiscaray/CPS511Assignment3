@@ -5,7 +5,9 @@ import { Laser } from "./laser.js";
 //import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { getCannonFragmentShader, getCannonVertexShader } from "./shaders.js";
+import { getFragmentShader, getVertexShader } from "./shaders.js";
+import { globals } from "./globals.js";
+import { getShaderUniforms } from "./util.js";
 
 const KEYS = {
   'a': 65,
@@ -309,6 +311,7 @@ camera.position.z = 5;
 camera.position.y = 1.5;
 
 scene.add(pointLight, sunLight);
+globals.pointLight = pointLight;
 
 function robotSpawn(){
     let rand = getRandomInRange(-10, 10);
@@ -327,20 +330,7 @@ function animate(){
 let objLoader = new OBJLoader();
 let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
 
-const uniform = THREE.UniformsUtils.merge(
-  [
-    THREE.UniformsLib['lights'],
-    {
-      Ka: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
-      Kd: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
-      Ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
-      LightIntensity: { value: new THREE.Vector4(0.5, 0.5, 0.5, 1.0) },
-      LightPosition: { value: new THREE.Vector4(pointLight.x, pointLight.y, pointLight.z, 1.0) },
-      Shininess: { value: 200.0 },
-      cannonTexture: { value: new THREE.TextureLoader().load( '../assets/cannonTexture.png' ) }
-    }
-  ]
-);
+const uniform = getShaderUniforms(new THREE.TextureLoader().load( '../assets/cannonTexture.png' ));
 
 console.log(JSON.stringify(uniform));
 objLoader.load('../assets/cannon.obj', mesh => {
@@ -351,8 +341,8 @@ objLoader.load('../assets/cannon.obj', mesh => {
     if(child.isMesh){
       child.material = new THREE.ShaderMaterial({ 
         uniforms: uniform,
-        vertexShader: getCannonVertexShader(),
-        fragmentShader: getCannonFragmentShader(),
+        vertexShader: getVertexShader(),
+        fragmentShader: getFragmentShader(),
         lights: true
       });
     }

@@ -1,4 +1,4 @@
-function getCannonVertexShader(){
+function getVertexShader(){
 
     return `
     varying vec3 Normal;
@@ -15,7 +15,7 @@ function getCannonVertexShader(){
 
 }
 
-function getCannonFragmentShader(){
+function getFragmentShader(){
 
     return `
     varying vec3 Normal;
@@ -28,7 +28,7 @@ function getCannonFragmentShader(){
     uniform vec4 LightPosition;
     uniform vec3 LightIntensity;
     uniform float Shininess;
-    uniform sampler2D cannonTexture;
+    uniform sampler2D meshTexture;
 
     vec3 phong() {
         vec3 n = normalize(Normal);
@@ -44,10 +44,10 @@ function getCannonFragmentShader(){
     }
 
     void main() {
-        gl_FragColor = texture2D(cannonTexture, vUv) * vec4(phong(), 1.0);
+        gl_FragColor = texture2D(meshTexture, vUv) * vec4(phong(), 1.0);
     }
     `;
 
 }
 
-export { getCannonFragmentShader, getCannonVertexShader };
+export { getFragmentShader, getVertexShader };

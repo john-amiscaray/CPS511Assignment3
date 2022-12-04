@@ -1,4 +1,6 @@
 import { Bullet } from "./bullet.js";
+import { getVertexShader, getFragmentShader } from "./shaders.js";
+import { getShaderUniforms } from "./util.js";
 import * as THREE from 'three';
 
 const robotDelZ = 5;
@@ -31,7 +33,13 @@ class RobotModel{
             this.robotBodyWidth, 
             this.robotBodyLength, 
             this.robotBodyDepth);
-        const bodyMat = new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load('../assets/robotTexture.png') });
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotTexture.png' ));
+        const bodyMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getVertexShader(),
+            fragmentShader: getFragmentShader(),
+            lights: true
+          });
         const body = new THREE.Mesh(bodyGeo, bodyMat);
         body.position.x = this.bodyX;
         body.position.y = this.bodyY;
@@ -46,7 +54,13 @@ class RobotModel{
         this.hipLength = this.robotBodyLength / 2;
         this.hipDepth = this.robotBodyDepth / 4;
         const hipGeo = new THREE.BoxGeometry(this.hipWidth, this.hipLength, this.hipDepth);
-        const hipMat = new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load('../assets/robotHipTexture.png') });
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotHipTexture.png' ));
+        const hipMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getVertexShader(),
+            fragmentShader: getFragmentShader(),
+            lights: true
+          });
         const hip = new THREE.Mesh(hipGeo, hipMat);
     
         hip.position.x = (isLeft ? 0 : (-this.robotBodyWidth)) + (this.robotBody.position.x + (this.robotBodyWidth / 2));

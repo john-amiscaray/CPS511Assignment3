@@ -1,0 +1,6 @@
+let globals = {
+
+
+};
+
+export { globals };
