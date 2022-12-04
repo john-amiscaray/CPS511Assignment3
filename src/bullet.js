@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { getShaderUniforms } from './util.js';
+import { getVertexShader, getFragmentShader } from './shaders.js';
 
 const bulletDelZ = 5;
 
@@ -7,10 +9,9 @@ class Bullet{
     static instances = [];
     static speed = 0.5;
 
-    constructor({radius, scene, color, x, y, z, angle}){
+    constructor({radius, scene, x, y, z, angle}){
         this.radius = radius;
         this.scene = scene;
-        this.color = color;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -19,7 +20,13 @@ class Bullet{
 
     draw(){
         const bulletGeo = new THREE.SphereGeometry(this.radius);
-        const bulletMat = new THREE.MeshStandardMaterial({ color: this.color });
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/bulletTexture.png' ));
+        const bulletMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getVertexShader(),
+            fragmentShader: getFragmentShader(),
+            lights: true
+        });
         this.mesh = new THREE.Mesh(bulletGeo, bulletMat);
         Bullet.instances.push(this);
         this.mesh.position.set(this.x, this.y, this.z);

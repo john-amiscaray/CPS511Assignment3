@@ -200,7 +200,6 @@ class RobotModel{
             let bullet = new Bullet({ 
                 radius: self.cannonBarrelRad, 
                 scene: self.scene, 
-                color: 0xFF0000, 
                 x: this.robotBody.position.x, 
                 y: this.robotBody.position.y,
                 z: this.robotBody.position.z,
