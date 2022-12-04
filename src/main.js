@@ -6,6 +6,22 @@ import { Laser } from "./laser.js";
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
+
+let current_level = 0;
+let level_details = [
+  { 
+    'robots': 10,
+    'speed': 5 
+  }, {
+    'robots': 15,
+    'speed': 7 
+  }, {
+  'robots': 10,
+  'speed': 5 
+  }
+]
+let current_robots = RobotModel.instances.length; //0
+
 const KEYS = {
   'a': 65,
   's': 83,
@@ -49,8 +65,6 @@ function shootLaser() {
     angle: Euler_
   });
   laser.draw();
-
-
 }
 
 class InputController {
@@ -322,7 +336,7 @@ camera.position.y = 1.5;
 scene.add(pointLight, sunLight);
 
 function robotSpawn(){
-    let rand = getRandomInRange(-10, 10);
+    let rand = getRandomInRange(-20, 20);
     let robot = new RobotModel(rand, 0, -50, scene);
     robot.draw();
 }
@@ -333,11 +347,33 @@ function animate(){
     Bullet.animateAll();
     Laser.animateAll();
     renderer.render(scene, camera);
+    if (RobotModel.current_level == 0 && RobotModel.level_score == 10){
+      console.log("LEVEL 0 COMPLETE")
+    }
 }
 
+
 animate();
-setInterval(robotSpawn, 1500);
-robotSpawn();
+/*setInterval(robotSpawn, 1500);
+robotSpawn();*/
+
+if (current_robots == 0) {
+  for (let i = 0; i < level_details[current_level].robots; i++){
+    robotSpawn();
+    current_robots += 1;
+  }
+}
+
+if (RobotModel.current_level == 0 && RobotModel.level_score == 10){
+  console.log("LEVEL 0 COMPLETE!!!")
+}
+
+
+
+console.log("main.js level_score: " + RobotModel.level_score);
+
+//console.log("RobotModel.instances.length " + RobotModel.instances.length);
+
 
 let _APP = null;
 
