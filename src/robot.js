@@ -1,5 +1,5 @@
 import { Bullet } from "./bullet.js";
-import { getVertexShader, getFragmentShader } from "./shaders.js";
+import { getStandardVertexShader, getStandardFragmentShader } from "./shaders.js";
 import { getShaderUniforms } from "./util.js";
 import * as THREE from 'three';
 
@@ -36,8 +36,8 @@ class RobotModel{
         const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
         const bodyMat = new THREE.ShaderMaterial({ 
             uniforms: uniforms,
-            vertexShader: getVertexShader(),
-            fragmentShader: getFragmentShader(),
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
             lights: true
           });
         const body = new THREE.Mesh(bodyGeo, bodyMat);
@@ -57,8 +57,8 @@ class RobotModel{
         const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotSecondaryTexture.png' ));
         const hipMat = new THREE.ShaderMaterial({ 
             uniforms: uniforms,
-            vertexShader: getVertexShader(),
-            fragmentShader: getFragmentShader(),
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
             lights: true
           });
         const hip = new THREE.Mesh(hipGeo, hipMat);
@@ -83,8 +83,8 @@ class RobotModel{
         const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
         const legMat = new THREE.ShaderMaterial({ 
             uniforms: uniforms,
-            vertexShader: getVertexShader(),
-            fragmentShader: getFragmentShader(),
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
             lights: true
           });
         const leg = new THREE.Mesh(legGeo, legMat);
@@ -108,8 +108,8 @@ class RobotModel{
         const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotSecondaryTexture.png' ));
         const footMat = new THREE.ShaderMaterial({ 
             uniforms: uniforms,
-            vertexShader: getVertexShader(),
-            fragmentShader: getFragmentShader(),
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
             lights: true
           });
         const foot = new THREE.Mesh(footGeo, footMat);
@@ -135,14 +135,14 @@ class RobotModel{
         const barrelUniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
         const cannonMat = new THREE.ShaderMaterial({ 
             uniforms: cannonUniforms,
-            vertexShader: getVertexShader(),
-            fragmentShader: getFragmentShader(),
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
             lights: true
             });
         const barrelMat = new THREE.ShaderMaterial({ 
             uniforms: barrelUniforms,
-            vertexShader: getVertexShader(),
-            fragmentShader: getFragmentShader(),
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
             lights: true
             });
     

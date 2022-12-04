@@ -5,7 +5,7 @@ import { Laser } from "./laser.js";
 //import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { getFragmentShader, getVertexShader } from "./shaders.js";
+import { getStandardFragmentShader, getStandardVertexShader } from "./shaders.js";
 import { globals } from "./globals.js";
 import { getShaderUniforms } from "./util.js";
 
@@ -341,8 +341,8 @@ objLoader.load('../assets/cannon.obj', mesh => {
     if(child.isMesh){
       child.material = new THREE.ShaderMaterial({ 
         uniforms: uniform,
-        vertexShader: getVertexShader(),
-        fragmentShader: getFragmentShader(),
+        vertexShader: getStandardVertexShader(),
+        fragmentShader: getStandardFragmentShader(),
         lights: true
       });
     }

@@ -1,4 +1,4 @@
-function getVertexShader(){
+function getStandardVertexShader(){
 
     return `
     varying vec3 Normal;
@@ -15,7 +15,7 @@ function getVertexShader(){
 
 }
 
-function getFragmentShader(){
+function getStandardFragmentShader(){
 
     return `
     varying vec3 Normal;
@@ -50,4 +50,4 @@ function getFragmentShader(){
 
 }
 
-export { getFragmentShader, getVertexShader };
+export { getStandardFragmentShader, getStandardVertexShader };

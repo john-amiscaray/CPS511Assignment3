@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { getShaderUniforms } from './util.js';
-import { getVertexShader, getFragmentShader } from './shaders.js';
+import { getStandardVertexShader, getStandardFragmentShader } from './shaders.js';
 
 const bulletDelZ = 5;
 
@@ -24,8 +24,8 @@ class Bullet{
         const uniforms = getShaderUniforms(Bullet.texture);
         const bulletMat = new THREE.ShaderMaterial({ 
             uniforms: uniforms,
-            vertexShader: getVertexShader(),
-            fragmentShader: getFragmentShader(),
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
             lights: true
         });
         this.mesh = new THREE.Mesh(bulletGeo, bulletMat);
