@@ -3,10 +3,24 @@ import * as THREE from 'three';
 
 const robotDelZ = 5;
 const animationIncrement = (Math.PI / 32);
+const level_details = [
+    { 
+      'robots': 10,
+      'speed': 5 
+    }, {
+      'robots': 15,
+      'speed': 7 
+    }, {
+    'robots': 10,
+    'speed': 5 
+    }
+]
+let current_level = 0;
 
 class RobotModel{
 
     static instances = [];
+    static level_score = level_details[current_level].robots - RobotModel.instances.length; //RobotModel.instances.length ; 0
 
     constructor(x, y, z, scene){
         this.robotBodyWidth = 0.75;
@@ -119,6 +133,17 @@ class RobotModel{
         this.cannonBarrel.position.z = this.cannonBaseRad;
     }
     
+    // TODO implement spawn here
+    /*
+    if (current_robots == 0) {
+    for (let i = 0; i < level_details[current_level].robots; i++){
+        robotSpawn(); -> draw();
+        current_robots += 1;
+    }
+    }
+    */
+    //
+
     draw(){
         this.drawBody();
         this.drawHip(false);
@@ -174,7 +199,6 @@ class RobotModel{
     }
 
     selfDestruct(){
-
         this.scene.remove(this.robotBody);
         this.scene.remove(this.leftHip);
         this.scene.remove(this.rightHip);
@@ -183,7 +207,24 @@ class RobotModel{
         this.scene.remove(this.rightFoot);
         this.scene.remove(this.leftFoot);
         RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+    }
 
+    diesFromLaser(){
+        this.scene.remove(this.robotBody);
+        this.scene.remove(this.leftHip);
+        this.scene.remove(this.rightHip);
+        this.scene.remove(this.leftLeg);
+        this.scene.remove(this.rightLeg);
+        this.scene.remove(this.rightFoot);
+        this.scene.remove(this.leftFoot);
+        RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+        //RobotModel.level_score += 1;
+        RobotModel.level_score = level_details[current_level].robots - RobotModel.instances.length;
+        console.log("Nice kill! RobotModel.level_score:" + RobotModel.level_score);
+        // If all robots are defeated, start next level
+        if (RobotModel.level_score == level_details[current_level].robots){
+            console.log("Level " + current_level + " Completed!")
+        }
     }
 
     static robotAnimate(){
@@ -216,5 +257,7 @@ class RobotModel{
     }
 
 }
+
+
 
 export { RobotModel };
