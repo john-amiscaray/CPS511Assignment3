@@ -1,4 +1,5 @@
 import { Bullet } from "./bullet.js";
+import * as THREE from 'three';
 
 const robotDelZ = 5;
 const animationIncrement = (Math.PI / 32);
@@ -154,7 +155,10 @@ class RobotModel{
         this.bulletFiringControl += 1;
         if(this.bulletFiringControl % 50 === 0){
             let self = this;
-            let Euler = this.robotBody.rotation;
+            let accuracy = 7;
+            let dir = new THREE.Vector3(Math.random()*accuracy-accuracy/2, 1.5 + Math.random()*accuracy-accuracy/2, Math.random()*accuracy-accuracy/2);
+            let Euler = this.robotBody.position;
+            dir.subVectors( dir, Euler ).normalize();
             let bullet = new Bullet({ 
                 radius: self.cannonBarrelRad, 
                 scene: self.scene, 
@@ -162,10 +166,23 @@ class RobotModel{
                 x: this.robotBody.position.x, 
                 y: this.robotBody.position.y,
                 z: this.robotBody.position.z,
-                angle: Euler.y
+                angle: dir
             });
             bullet.draw();
         }
+    }
+
+    selfDestruct(){
+
+        this.scene.remove(this.robotBody);
+        this.scene.remove(this.leftHip);
+        this.scene.remove(this.rightHip);
+        this.scene.remove(this.leftLeg);
+        this.scene.remove(this.rightLeg);
+        this.scene.remove(this.rightFoot);
+        this.scene.remove(this.leftFoot);
+        RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+
     }
 
     static robotAnimate(){
@@ -179,14 +196,10 @@ class RobotModel{
     static moveRobotsForward(scene){
         RobotModel.instances.forEach(robot => {
             if(robot.robotBody.position.z > robotDelZ){
-                scene.remove(robot.robotBody);
+                robot.selfDestruct();
             }
         });
-        RobotModel.instances = RobotModel.instances
-        .filter(robot => { 
-            return !(robot.robotBody.position.z > robotDelZ) 
-        });
-    
+        
         RobotModel.instances.forEach(robot => {
             robot.robotBody.position.z += 0.1;
             robot.leftHip.position.z += 0.1;
