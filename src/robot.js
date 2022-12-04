@@ -33,7 +33,7 @@ class RobotModel{
             this.robotBodyWidth, 
             this.robotBodyLength, 
             this.robotBodyDepth);
-        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotTexture.png' ));
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
         const bodyMat = new THREE.ShaderMaterial({ 
             uniforms: uniforms,
             vertexShader: getVertexShader(),
@@ -54,7 +54,7 @@ class RobotModel{
         this.hipLength = this.robotBodyLength / 2;
         this.hipDepth = this.robotBodyDepth / 4;
         const hipGeo = new THREE.BoxGeometry(this.hipWidth, this.hipLength, this.hipDepth);
-        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotHipTexture.png' ));
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotSecondaryTexture.png' ));
         const hipMat = new THREE.ShaderMaterial({ 
             uniforms: uniforms,
             vertexShader: getVertexShader(),
@@ -79,9 +79,15 @@ class RobotModel{
         this.legWidth = this.hipWidth * 0.75;
         this.legLength = this.hipLength * 2;
         this.legDepth = this.hipDepth;
-        const hipGeo = new THREE.BoxGeometry(this.legWidth, this.legLength, this.legDepth);
-        const hipMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        const leg = new THREE.Mesh(hipGeo, hipMat);
+        const legGeo = new THREE.BoxGeometry(this.legWidth, this.legLength, this.legDepth);
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
+        const legMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getVertexShader(),
+            fragmentShader: getFragmentShader(),
+            lights: true
+          });
+        const leg = new THREE.Mesh(legGeo, legMat);
     
         leg.position.y = -(this.hipLength / 2) - (this.legLength / 2);
     
@@ -99,7 +105,13 @@ class RobotModel{
         this.footLength = this.legLength / 3;
         this.footDepth = this.legDepth * 1.5;
         const footGeo = new THREE.BoxGeometry(this.footWidth, this.footLength, this.footDepth);
-        const footMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotSecondaryTexture.png' ));
+        const footMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getVertexShader(),
+            fragmentShader: getFragmentShader(),
+            lights: true
+          });
         const foot = new THREE.Mesh(footGeo, footMat);
     
         foot.position.y = -(this.legLength / 2) - (this.footLength / 2);
@@ -119,8 +131,20 @@ class RobotModel{
             this.cannonBarrelRad, 
             this.cannonBarrelRad, 
             this.cannonBarrelHeight);
-        const cannonMat = new THREE.MeshStandardMaterial({ color: 0x54fcff });
-        const barrelMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+        const cannonUniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotSecondaryTexture.png' ));
+        const barrelUniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
+        const cannonMat = new THREE.ShaderMaterial({ 
+            uniforms: cannonUniforms,
+            vertexShader: getVertexShader(),
+            fragmentShader: getFragmentShader(),
+            lights: true
+            });
+        const barrelMat = new THREE.ShaderMaterial({ 
+            uniforms: barrelUniforms,
+            vertexShader: getVertexShader(),
+            fragmentShader: getFragmentShader(),
+            lights: true
+            });
     
         this.cannonBase = new THREE.Mesh(baseGeo, cannonMat);
         this.cannonBarrel = new THREE.Mesh(barrelGeo, barrelMat);
