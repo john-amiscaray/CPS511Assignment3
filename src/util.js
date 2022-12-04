@@ -19,4 +19,12 @@ function getShaderUniforms(texture){
 
 }
 
-export { getRandomInRange, getShaderUniforms };
+function getGlowShaderUniforms(texture){
+
+    return THREE.UniformsUtils.merge([THREE.UniformsLib['lights'], {
+        meshTexture: { value: texture }
+    }]);
+
+}
+
+export { getRandomInRange, getShaderUniforms, getGlowShaderUniforms };
