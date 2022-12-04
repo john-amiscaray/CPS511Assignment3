@@ -8,7 +8,8 @@ class Bullet{
 
     static instances = [];
     static speed = 0.5;
-
+    static texture = new THREE.TextureLoader().load( '../assets/bulletTexture.png' );
+    
     constructor({radius, scene, x, y, z, angle}){
         this.radius = radius;
         this.scene = scene;
@@ -20,7 +21,7 @@ class Bullet{
 
     draw(){
         const bulletGeo = new THREE.SphereGeometry(this.radius);
-        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/bulletTexture.png' ));
+        const uniforms = getShaderUniforms(Bullet.texture);
         const bulletMat = new THREE.ShaderMaterial({ 
             uniforms: uniforms,
             vertexShader: getVertexShader(),
