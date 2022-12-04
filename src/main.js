@@ -326,11 +326,11 @@ const uniform = THREE.UniformsUtils.merge(
   [
     THREE.UniformsLib['lights'],
     {
-      Ka: { value: new THREE.Vector3(0.9, 0.5, 0.3) },
-      Kd: { value: new THREE.Vector3(0.9, 0.5, 0.3) },
-      Ks: { value: new THREE.Vector3(0.8, 0.8, 0.8) },
+      Ka: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
+      Kd: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
+      Ks: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
       LightIntensity: { value: new THREE.Vector4(0.5, 0.5, 0.5, 1.0) },
-      LightPosition: { value: new THREE.Vector4(0.0, 2000.0, 0.0, 1.0) },
+      LightPosition: { value: new THREE.Vector4(pointLight.x, pointLight.y, pointLight.z, 1.0) },
       Shininess: { value: 200.0 }
     }
   ]
