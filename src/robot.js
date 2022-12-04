@@ -3,24 +3,30 @@ import * as THREE from 'three';
 
 const robotDelZ = 5;
 const animationIncrement = (Math.PI / 32);
-const level_details = [
-    { 
-      'robots': 10,
-      'speed': 5 
-    }, {
-      'robots': 15,
-      'speed': 7 
-    }, {
-    'robots': 10,
-    'speed': 5 
-    }
-]
-let current_level = 0;
+
 
 class RobotModel{
 
     static instances = [];
-    static level_score = level_details[current_level].robots - RobotModel.instances.length; //RobotModel.instances.length ; 0
+    static current_level = 0;
+    static level_complete = false;
+    static level_details = [
+        { 
+          'robots': 7,
+          'speed': 0.1,
+          'complete': false
+        }, {
+          'robots': 10,
+          'speed': 0.125,
+          'complete': false
+        }, {
+        'robots': 20,
+        'speed': 0.15,
+        'complete': false
+        }
+    ];
+    static level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length;
+
 
     constructor(x, y, z, scene){
         this.robotBodyWidth = 0.75;
@@ -154,6 +160,9 @@ class RobotModel{
         this.drawFoot(false);
         this.drawCannon();
         RobotModel.instances.push(this);
+        if (RobotModel.current_level < 3){
+            RobotModel.level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length; 
+        }
     }
 
     stepAnimation(){
@@ -207,6 +216,7 @@ class RobotModel{
         this.scene.remove(this.rightFoot);
         this.scene.remove(this.leftFoot);
         RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+        console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
     }
 
     diesFromLaser(){
@@ -218,13 +228,18 @@ class RobotModel{
         this.scene.remove(this.rightFoot);
         this.scene.remove(this.leftFoot);
         RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
-        //RobotModel.level_score += 1;
-        RobotModel.level_score = level_details[current_level].robots - RobotModel.instances.length;
-        console.log("Nice kill! RobotModel.level_score:" + RobotModel.level_score);
-        // If all robots are defeated, start next level
-        if (RobotModel.level_score == level_details[current_level].robots){
-            console.log("Level " + current_level + " Completed!")
+        if (RobotModel.current_level < 3){
+            RobotModel.level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length;
+            console.log("Nice kill! RobotModel.level_score:" + RobotModel.level_score);
+            // If all robots are defeated, start next level
+            if (RobotModel.level_score == RobotModel.level_details[RobotModel.current_level].robots && RobotModel.level_complete == false){
+                console.log("robot.js Level " + RobotModel.current_level + " Completed!")
+                RobotModel.current_level += 1;
+                RobotModel.level_complete = true;
+                RobotModel.level_score = 0;
+            }
         }
+
     }
 
     static robotAnimate(){
@@ -243,9 +258,9 @@ class RobotModel{
         });
         
         RobotModel.instances.forEach(robot => {
-            robot.robotBody.position.z += 0.1;
-            robot.leftHip.position.z += 0.1;
-            robot.rightHip.position.z += 0.1;
+            robot.robotBody.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
+            robot.leftHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
+            robot.rightHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
         });
     }
 

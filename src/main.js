@@ -7,19 +7,7 @@ import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 
-let current_level = 0;
-let level_details = [
-  { 
-    'robots': 10,
-    'speed': 5 
-  }, {
-    'robots': 15,
-    'speed': 7 
-  }, {
-  'robots': 10,
-  'speed': 5 
-  }
-]
+
 let current_robots = RobotModel.instances.length; //0
 
 const KEYS = {
@@ -27,6 +15,8 @@ const KEYS = {
   's': 83,
   'w': 87,
   'd': 68,
+  'spacebar': 32,
+  'r': 82
 };
   
 function clamp(x, a, b) {
@@ -65,6 +55,7 @@ function shootLaser() {
     angle: Euler_
   });
   laser.draw();
+  //aconsole.log("main.js level_score: " + RobotModel.level_score);
 }
 
 class InputController {
@@ -110,8 +101,6 @@ class InputController {
       switch (e.button) {
         case 0: {
           this.current_.leftButton = true;
-          //console.log("leftButton down");
-          shootLaser();
           break;
         }
         case 2: {
@@ -138,6 +127,14 @@ class InputController {
   
     onKeyDown_(e) {
       this.keys_[e.keyCode] = true;
+      if (e.keyCode == KEYS['r']){
+        console.log ("Restart level");
+      }
+      if (e.keyCode == KEYS['spacebar']){
+
+        shootLaser();
+      }
+      //console.log ("keyCode: " + e.keyCode);
     }
   
     onKeyUp_(e) {
@@ -204,8 +201,8 @@ class FirstPersonCamera {
     }
   
     updateTranslation_(timeElapsedS) {
-      const forwardVelocity = (this.input_.key(KEYS.w) ? 1 : 0) + (this.input_.key(KEYS.s) ? -1 : 0)
-      const strafeVelocity = (this.input_.key(KEYS.a) ? 1 : 0) + (this.input_.key(KEYS.d) ? -1 : 0)
+      const forwardVelocity = 0; //(this.input_.key(KEYS.w) ? 1 : 0) + (this.input_.key(KEYS.s) ? -1 : 0);
+      const strafeVelocity = 0; //(this.input_.key(KEYS.a) ? 1 : 0) + (this.input_.key(KEYS.d) ? -1 : 0);
   
       const qx = new THREE.Quaternion();
       qx.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.phi_);
@@ -347,33 +344,38 @@ function animate(){
     Bullet.animateAll();
     Laser.animateAll();
     renderer.render(scene, camera);
-    if (RobotModel.current_level == 0 && RobotModel.level_score == 10){
-      console.log("LEVEL 0 COMPLETE")
+    //console.log("animate level_score:" + RobotModel.level_score + " current_level:" + RobotModel.current_level)
+    //console.log("instances.length: " + RobotModel.instances.length)
+    current_robots = RobotModel.instances.length;
+    if (RobotModel.level_complete && RobotModel.current_level < 3){
+      console.log("main.js LEVEL " + RobotModel.current_level + " COMPLETE");
+      RobotModel.level_complete = false;
+      //current_robots = 0;
+      setTimeout(() => { loadLevel(); }, 5000);
+      //loadLevel();
+    }
+    if (RobotModel.current_level == 3){
+      console.log("GAME OVER: YOU'VE WON!!!");
     }
 }
 
+function loadLevel(){
+  console.log("Level " + RobotModel.current_level + " start.")
+  if (current_robots == 0) {
+    for (let i = 0; i < RobotModel.level_details[RobotModel.current_level].robots; i++){
+      robotSpawn();
+      //current_robots += 1;
+    }
+  }
+  current_robots = RobotModel.instances.length;
+}
 
+console.log("Game start.")
+loadLevel();
 animate();
+
 /*setInterval(robotSpawn, 1500);
 robotSpawn();*/
-
-if (current_robots == 0) {
-  for (let i = 0; i < level_details[current_level].robots; i++){
-    robotSpawn();
-    current_robots += 1;
-  }
-}
-
-if (RobotModel.current_level == 0 && RobotModel.level_score == 10){
-  console.log("LEVEL 0 COMPLETE!!!")
-}
-
-
-
-console.log("main.js level_score: " + RobotModel.level_score);
-
-//console.log("RobotModel.instances.length " + RobotModel.instances.length);
-
 
 let _APP = null;
 
