@@ -31,11 +31,25 @@ class Laser{
         this.mesh.rotateY(-this.angle.x); 
 
         this.scene.add(this.mesh);
-        this.ray = new THREE.Raycaster();
-        this.ray.far = laserHeight / 2;
-        this.ray.set(new THREE.Vector3(this.x, this.y, this.z), new THREE.Vector3(0, 0, 1).applyEuler(new Euler(this.angle.y, -this.angle.x, 0)).normalize().negate());
-        // Uncomment the line below for ray debug info
-        //this.scene.add(new THREE.ArrowHelper( this.ray.ray.direction, this.ray.ray.origin, this.ray.far, Math.random() * 0xffffff ));
+        // this.ray = new THREE.Raycaster();
+        // this.ray.far = laserHeight / 2;
+        // this.ray.set(new THREE.Vector3(this.x, this.y, this.z), new THREE.Vector3(0, 0, 1).applyEuler(new Euler(this.angle.y, -this.angle.x, 0)).normalize().negate());
+        this.rays = [];
+        let rayX = -laserGeo.parameters.width
+        let rayY = -laserGeo.parameters.height;
+        for(let i = 0; i < 3; i++){
+            for(let j = 0; j < 3; j++){
+                let ray = new THREE.Raycaster();
+                ray.far = laserHeight / 2;
+                ray.set(new THREE.Vector3(this.x + rayX, this.y + rayY, this.z), new THREE.Vector3(0, 0, 1).applyEuler(new Euler(this.angle.y, -this.angle.x, 0)).normalize().negate());
+                this.rays.push(ray);
+                // Uncomment the line below for ray debug info
+                //this.scene.add(new THREE.ArrowHelper( ray.ray.direction, ray.ray.origin, ray.far, Math.random() * 0xffffff ));
+                rayY += laserGeo.parameters.height;
+            }
+            rayY = -laserGeo.parameters.height;
+            rayX += laserGeo.parameters.width;
+        }
     }
 
     animate(){
@@ -55,10 +69,12 @@ class Laser{
 
         Laser.instances.forEach(laser => {
             RobotModel.instances.forEach(robot => {
-                let intersect = laser.ray.intersectObject(robot.robotBody);
-                if(intersect.length !== 0){
-                    robot.selfDestruct();
-                }
+                laser.rays.forEach(ray => {
+                    let intersect = ray.intersectObject(robot.robotBody).concat(ray.intersectObject(robot.leftHip)).concat(ray.intersectObject(robot.rightHip));
+                    if(intersect.length !== 0){
+                        robot.selfDestruct();
+                    }
+                });
             });
         });
 
