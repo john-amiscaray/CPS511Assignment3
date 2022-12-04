@@ -216,7 +216,6 @@ class RobotModel{
         this.scene.remove(this.rightFoot);
         this.scene.remove(this.leftFoot);
         RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
-        console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
     }
 
     diesFromLaser(){
@@ -239,7 +238,6 @@ class RobotModel{
                 RobotModel.level_score = 0;
             }
         }
-
     }
 
     static robotAnimate(){
@@ -254,6 +252,7 @@ class RobotModel{
         RobotModel.instances.forEach(robot => {
             if(robot.robotBody.position.z > robotDelZ){
                 robot.selfDestruct();
+                console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
             }
         });
         

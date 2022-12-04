@@ -129,9 +129,9 @@ class InputController {
       this.keys_[e.keyCode] = true;
       if (e.keyCode == KEYS['r']){
         console.log ("Restart level");
+        restartLevel();
       }
       if (e.keyCode == KEYS['spacebar']){
-
         shootLaser();
       }
       //console.log ("keyCode: " + e.keyCode);
@@ -344,18 +344,15 @@ function animate(){
     Bullet.animateAll();
     Laser.animateAll();
     renderer.render(scene, camera);
-    //console.log("animate level_score:" + RobotModel.level_score + " current_level:" + RobotModel.current_level)
-    //console.log("instances.length: " + RobotModel.instances.length)
     current_robots = RobotModel.instances.length;
     if (RobotModel.level_complete && RobotModel.current_level < 3){
-      console.log("main.js LEVEL " + RobotModel.current_level + " COMPLETE");
+      console.log("main.js LEVEL " + RobotModel.current_level + " COMPLETED");
       RobotModel.level_complete = false;
-      //current_robots = 0;
+      console.log("Standby, 5 seconds out.");
       setTimeout(() => { loadLevel(); }, 5000);
-      //loadLevel();
     }
     if (RobotModel.current_level == 3){
-      console.log("GAME OVER: YOU'VE WON!!!");
+      console.log("GAME OVER: YOU'VE WON!!!"); 
     }
 }
 
@@ -364,10 +361,23 @@ function loadLevel(){
   if (current_robots == 0) {
     for (let i = 0; i < RobotModel.level_details[RobotModel.current_level].robots; i++){
       robotSpawn();
-      //current_robots += 1;
     }
   }
   current_robots = RobotModel.instances.length;
+}
+
+function restartLevel(){
+  if (RobotModel.current_level == 3){
+    RobotModel.current_level = 0;
+  }   
+  console.log("Level " + RobotModel.current_level + " restart.")
+  RobotModel.instances.forEach(robot => {
+    robot.selfDestruct();
+  });
+  current_robots = RobotModel.instances.length;
+  RobotModel.level_complete = false;
+  console.log("Standby, 3 seconds out.");
+  setTimeout(() => { loadLevel(); }, 3000);
 }
 
 console.log("Game start.")
