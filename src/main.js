@@ -5,6 +5,7 @@ import { Laser } from "./laser.js";
 //import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { getCannonFragmentShader, getCannonVertexShader } from "./shaders.js";
 
 const KEYS = {
   'a': 65,
@@ -16,23 +17,6 @@ const KEYS = {
 function clamp(x, a, b) {
   return Math.min(Math.max(x, a), b);
 }
-
-let objLoader = new OBJLoader();
-let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
-
-objLoader.load('../assets/cannon.obj', mesh => {
-
-  mesh.position.y = 1;
-  scene.add(mesh);
-  cannon = mesh;
-  cannon.traverse(child => {
-    if(child.isMesh){
-      child.material = new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load('../assets/cannonTexture.png') });
-    }
-  });
-  scene.add(cannon);
-  
-});
 
 function shootLaser() {
   let playerDirection = new THREE.Vector3();
@@ -334,6 +318,42 @@ function animate(){
     Laser.animateAll();
     renderer.render(scene, camera);
 }
+
+let objLoader = new OBJLoader();
+let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
+
+const uniform = THREE.UniformsUtils.merge(
+  [
+    THREE.UniformsLib['lights'],
+    {
+      Ka: { value: new THREE.Vector3(0.9, 0.5, 0.3) },
+      Kd: { value: new THREE.Vector3(0.9, 0.5, 0.3) },
+      Ks: { value: new THREE.Vector3(0.8, 0.8, 0.8) },
+      LightIntensity: { value: new THREE.Vector4(0.5, 0.5, 0.5, 1.0) },
+      LightPosition: { value: new THREE.Vector4(0.0, 2000.0, 0.0, 1.0) },
+      Shininess: { value: 200.0 }
+    }
+  ]
+);
+
+console.log(JSON.stringify(uniform));
+objLoader.load('../assets/cannon.obj', mesh => {
+
+  mesh.position.y = 1;
+  cannon = mesh;
+  cannon.traverse(child => {
+    if(child.isMesh){
+      child.material = new THREE.ShaderMaterial({ 
+        uniforms: uniform,
+        vertexShader: getCannonVertexShader(),
+        fragmentShader: getCannonFragmentShader(),
+        lights: true
+      });
+    }
+  });
+  scene.add(cannon);
+  
+});
 
 animate();
 setInterval(robotSpawn, 1500);
