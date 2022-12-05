@@ -99,9 +99,10 @@ function getCannonVertexShader(){
         Position = vec3(modelViewMatrix * vec4(position, 1.0));
         if(isDead){
             gl_Position = (projectionMatrix * modelViewMatrix * vec4(position, 1.0)) + vec4(sin(dt * 20.0) * 0.1, 0.0, 0.0, 0.0); 
+            // Bend + tilt effect
             if(gl_Position.z > 0.8){
                 float distance = gl_Position.z - 0.8;
-                gl_Position += vec4(0.0, -0.2 * abs(sin(distance)), 0.0, 0.0);
+                gl_Position += vec4(0.0, -0.4 * abs(sin(distance)), 0.0, 0.0);
             }
         }else{
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
