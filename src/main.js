@@ -128,7 +128,7 @@ class InputController {
         console.log ("Restart level");
         restartLevel();
       }
-      if (e.keyCode == KEYS['spacebar']){
+      if (e.keyCode == KEYS['spacebar'] && !globals.gameOver){
         shootLaser();
       }
     }
@@ -349,7 +349,7 @@ function animate(){
 
     cannonUniform.dt.value = clock.getElapsedTime();
     cannonUniform.isDead.value = globals.gameOver;
-    console.log(cannonUniform.isDead.value)
+    
     renderer.autoClear = false;
     renderer.clear();
 
