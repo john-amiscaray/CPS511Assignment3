@@ -83,7 +83,7 @@ class Laser{
                 laser.rays.forEach(ray => {
                     let intersect = ray.intersectObject(robot.robotBody).concat(ray.intersectObject(robot.leftHip)).concat(ray.intersectObject(robot.rightHip));
                     if(intersect.length !== 0){
-                        robot.selfDestruct();
+                        robot.diesFromLaser();
                     }
                 });
             });

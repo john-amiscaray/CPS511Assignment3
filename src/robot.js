@@ -6,9 +6,29 @@ import * as THREE from 'three';
 const robotDelZ = 5;
 const animationIncrement = (Math.PI / 32);
 
+
 class RobotModel{
 
     static instances = [];
+    static current_level = 0;
+    static level_complete = false;
+    static level_details = [
+        { 
+          'robots': 7,
+          'speed': 0.1,
+          'complete': false
+        }, {
+          'robots': 10,
+          'speed': 0.125,
+          'complete': false
+        }, {
+        'robots': 20,
+        'speed': 0.15,
+        'complete': false
+        }
+    ];
+    static level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length;
+    static game_over = false;
 
     constructor(x, y, z, scene){
         this.robotBodyWidth = 0.75;
@@ -156,6 +176,17 @@ class RobotModel{
         this.cannonBarrel.position.z = this.cannonBaseRad;
     }
     
+    // TODO implement spawn here
+    /*
+    if (current_robots == 0) {
+    for (let i = 0; i < level_details[current_level].robots; i++){
+        robotSpawn(); -> draw();
+        current_robots += 1;
+    }
+    }
+    */
+    //
+
     draw(){
         this.drawBody();
         this.drawHip(false);
@@ -166,6 +197,9 @@ class RobotModel{
         this.drawFoot(false);
         this.drawCannon();
         RobotModel.instances.push(this);
+        if (RobotModel.current_level < 3){
+            RobotModel.level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length; 
+        }
     }
 
     stepAnimation(){
@@ -210,7 +244,6 @@ class RobotModel{
     }
 
     selfDestruct(){
-
         this.scene.remove(this.robotBody);
         this.scene.remove(this.leftHip);
         this.scene.remove(this.rightHip);
@@ -219,7 +252,28 @@ class RobotModel{
         this.scene.remove(this.rightFoot);
         this.scene.remove(this.leftFoot);
         RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+    }
 
+    diesFromLaser(){
+        this.scene.remove(this.robotBody);
+        this.scene.remove(this.leftHip);
+        this.scene.remove(this.rightHip);
+        this.scene.remove(this.leftLeg);
+        this.scene.remove(this.rightLeg);
+        this.scene.remove(this.rightFoot);
+        this.scene.remove(this.leftFoot);
+        RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+        if (RobotModel.current_level < 3){
+            RobotModel.level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length;
+            console.log("Nice kill! RobotModel.level_score:" + RobotModel.level_score);
+            // If all robots are defeated, start next level
+            if (RobotModel.level_score == RobotModel.level_details[RobotModel.current_level].robots && RobotModel.level_complete == false){
+                console.log("robot.js Level " + RobotModel.current_level + " Completed!")
+                RobotModel.current_level += 1;
+                RobotModel.level_complete = true;
+                RobotModel.level_score = 0;
+            }
+        }
     }
 
     static robotAnimate(){
@@ -234,13 +288,15 @@ class RobotModel{
         RobotModel.instances.forEach(robot => {
             if(robot.robotBody.position.z > robotDelZ){
                 robot.selfDestruct();
+                console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
+                RobotModel.game_over = true;
             }
         });
         
         RobotModel.instances.forEach(robot => {
-            robot.robotBody.position.z += 0.1;
-            robot.leftHip.position.z += 0.1;
-            robot.rightHip.position.z += 0.1;
+            robot.robotBody.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
+            robot.leftHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
+            robot.rightHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
         });
     }
 

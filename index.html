@@ -2,16 +2,22 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>My first three.js app</title>
+		<title>CPS511 A3 - John Amiscaray & Ian Zhu</title>
 		<link rel="stylesheet" href="/styles/styles.css">
 	</head>
 	<body>
 		<canvas id="bg"></canvas>
+		<script type="module" src="/src/moon.js"></script>
 		<script type="module" src="/src/globals.js"></script>
 		<script type="module" src="/src/shaders.js"></script>
 		<script type="module" src="/src/bullet.js"></script>
-        <script type="module" src="/src/robot.js"></script>
-		<script type="module" src="/src/main.js"></script>
+		<script type="module" src="/src/robot.js"></script>
 		<script type="module" src="/src/util.js"></script>
+		<script type="module" src="/src/main.js"></script>
+		<footer>
+			<div class="footer" id="level_score"> </div>
+			<div class="footer" id="current_level"> </div>
+			<div class="footer" id="message"> </div>
+		 </footer>
 	</body>
 </html>

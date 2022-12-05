@@ -2,7 +2,6 @@ import { RobotModel } from "./robot.js";
 import { getRandomInRange } from "./util.js";
 import { Bullet } from "./bullet.js";
 import { Laser } from "./laser.js";
-//import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { getStandardFragmentShader, getStandardVertexShader } from "./shaders.js";
@@ -11,12 +10,18 @@ import { getShaderUniforms } from "./util.js";
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import './index.css'
+import { Moon } from './moon.js'
+
+let current_robots = RobotModel.instances.length; 
 
 const KEYS = {
   'a': 65,
   's': 83,
   'w': 87,
   'd': 68,
+  'spacebar': 32,
+  'r': 82
 };
 
 const bloomLayer = new THREE.Layers();
@@ -49,8 +54,6 @@ function shootLaser() {
     angle: Euler_
   });
   laser.draw();
-
-
 }
 
 class InputController {
@@ -96,8 +99,6 @@ class InputController {
       switch (e.button) {
         case 0: {
           this.current_.leftButton = true;
-          //console.log("leftButton down");
-          shootLaser();
           break;
         }
         case 2: {
@@ -124,6 +125,13 @@ class InputController {
   
     onKeyDown_(e) {
       this.keys_[e.keyCode] = true;
+      if (e.keyCode == KEYS['r']){
+        console.log ("Restart level");
+        restartLevel();
+      }
+      if (e.keyCode == KEYS['spacebar']){
+        shootLaser();
+      }
     }
   
     onKeyUp_(e) {
@@ -142,10 +150,6 @@ class InputController {
       if (this.previous_ !== null) {
         this.current_.mouseXDelta = this.current_.mouseX - this.previous_.mouseX;
         this.current_.mouseYDelta = this.current_.mouseY - this.previous_.mouseY;
-  
-        //console.log("this.current_.mouseX: " + this.current_.mouseX)
-        //console.log("this.current_.mouseY: " + this.current_.mouseY)
-  
         this.previous_ = {...this.current_};
       }
     }
@@ -172,9 +176,7 @@ class FirstPersonCamera {
   
     updateCamera_(_) {
       this.camera_.quaternion.copy(this.rotation_);
-      this.camera_.position.copy(this.translation_);
-      //this.camera_.position.y += Math.sin(this.headBobTimer_ * 10) * 1.5;
-  
+      this.camera_.position.copy(this.translation_);  
       const forward = new THREE.Vector3(0, 0, -1);
       forward.applyQuaternion(this.rotation_);
   
@@ -190,8 +192,8 @@ class FirstPersonCamera {
     }
   
     updateTranslation_(timeElapsedS) {
-      const forwardVelocity = (this.input_.key(KEYS.w) ? 1 : 0) + (this.input_.key(KEYS.s) ? -1 : 0)
-      const strafeVelocity = (this.input_.key(KEYS.a) ? 1 : 0) + (this.input_.key(KEYS.d) ? -1 : 0)
+      const forwardVelocity = 0; //(this.input_.key(KEYS.w) ? 1 : 0) + (this.input_.key(KEYS.s) ? -1 : 0);
+      const strafeVelocity = 0; //(this.input_.key(KEYS.a) ? 1 : 0) + (this.input_.key(KEYS.d) ? -1 : 0);
   
       const qx = new THREE.Quaternion();
       qx.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.phi_);
@@ -322,7 +324,8 @@ const pointLight = new THREE.PointLight(0xffffff);
 pointLight.position.set(0,7,-5);
 
 const sunLight = new THREE.HemisphereLight(0x404040, 0xFFFFFF, 0.5);
-
+const moon = new Moon({x: pointLight.position.x, y: pointLight.position.y, z: pointLight.position.z, radius: 2, scene: scene});
+moon.draw();
 
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
@@ -336,7 +339,7 @@ scene.add(pointLight, sunLight);
 globals.pointLight = pointLight;
 
 function robotSpawn(){
-    let rand = getRandomInRange(-10, 10);
+    let rand = getRandomInRange(-20, 20);
     let robot = new RobotModel(rand, 0, -50, scene);
     robot.draw();
 }
@@ -357,6 +360,53 @@ function animate(){
     camera.layers.set(globals.ENTIRE_SCENE);
     renderer.clearDepth();
     renderer.render(scene, camera);
+    current_robots = RobotModel.instances.length;
+    document.getElementById('level_score').innerHTML = "Level Score: " + RobotModel.level_score; 
+    if (RobotModel.current_level < 3){
+      document.getElementById('current_level').innerHTML = "Current Level: " + RobotModel.current_level; 
+      if (RobotModel.level_complete){
+        let previous_level = (RobotModel.current_level)-1
+        document.getElementById('message').innerHTML = "Level " + previous_level + " completed. Standby 5 seconds for next level."; 
+        console.log("main.js LEVEL " + RobotModel.current_level + " COMPLETED");
+        RobotModel.level_complete = false;
+        console.log("Standby, 5 seconds out.");
+        setTimeout(() => { loadLevel(); }, 5000);
+      }
+    }
+    if (RobotModel.current_level == 3){
+      console.log("GAME OVER: YOU'VE WON!!!"); 
+      document.getElementById('message').innerHTML = "GAME OVER: YOU'VE WON!!! Press 'r' to restart to level 0."; 
+    }
+    if (RobotModel.game_over){
+      document.getElementById('message').innerHTML = "GAME OVER: A ROBOT LEAKED THROUGH! Press 'r' to restart the level."; 
+    }
+}
+
+function loadLevel(){
+  console.log("Level " + RobotModel.current_level + " start.")
+  document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " start."; 
+  if (current_robots == 0) {
+    for (let i = 0; i < RobotModel.level_details[RobotModel.current_level].robots; i++){
+      robotSpawn();
+    }
+  }
+  current_robots = RobotModel.instances.length;
+}
+
+function restartLevel(){
+  if (RobotModel.current_level == 3){
+    RobotModel.current_level = 0;
+  }   
+  console.log("Level " + RobotModel.current_level + " restart.")
+  RobotModel.instances.forEach(robot => {
+    robot.selfDestruct();
+  });
+  current_robots = RobotModel.instances.length;
+  RobotModel.level_complete = false;
+  RobotModel.game_over = false;
+  console.log("Standby, 3 seconds out.");
+  document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " restart. Standby, 3 seconds.";
+  setTimeout(() => { loadLevel(); }, 3000);
 }
 
 let objLoader = new OBJLoader();
@@ -383,9 +433,10 @@ objLoader.load('../assets/cannon.obj', mesh => {
   
 });
 
+console.log("Game start.")
+loadLevel();
 animate();
-setInterval(robotSpawn, 1500);
-robotSpawn();
+
 
 let _APP = null;
 
