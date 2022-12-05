@@ -4,9 +4,9 @@ import { Bullet } from "./bullet.js";
 import { Laser } from "./laser.js";
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { getStandardFragmentShader, getStandardVertexShader } from "./shaders.js";
+import { getCannonFragmentShader, getCannonVertexShader } from "./shaders.js";
 import { globals } from "./globals.js";
-import { getShaderUniforms } from "./util.js";
+import { getCannonShaderUniforms } from "./util.js";
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -303,7 +303,7 @@ class FirstPersonCameraController {
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
+const clock = new THREE.Clock();
 const renderScene = new RenderPass( scene, camera );
 
 const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
@@ -347,6 +347,9 @@ function robotSpawn(){
 function animate(){
     requestAnimationFrame(animate);
 
+    cannonUniform.dt.value = clock.getElapsedTime();
+    cannonUniform.isDead.value = globals.playerHealth <= 0;
+    console.log(cannonUniform.isDead.value)
     renderer.autoClear = false;
     renderer.clear();
 
@@ -418,9 +421,8 @@ function restartLevel(){
 let objLoader = new OBJLoader();
 let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
 
-const uniform = getShaderUniforms(new THREE.TextureLoader().load( '../assets/cannonTexture.png' ));
+const cannonUniform = getCannonShaderUniforms();
 
-console.log(JSON.stringify(uniform));
 objLoader.load('../assets/cannon.obj', mesh => {
 
   mesh.position.y = 1;
@@ -428,9 +430,9 @@ objLoader.load('../assets/cannon.obj', mesh => {
   cannon.traverse(child => {
     if(child.isMesh){
       child.material = new THREE.ShaderMaterial({ 
-        uniforms: uniform,
-        vertexShader: getStandardVertexShader(),
-        fragmentShader: getStandardFragmentShader(),
+        uniforms: cannonUniform,
+        vertexShader: getCannonVertexShader(),
+        fragmentShader: getCannonFragmentShader(),
         lights: true
       });
     }
