@@ -6,7 +6,7 @@ class Bullet{
 
     static instances = [];
     static speed = 0.5;
-    static player_health = 10;
+    static player_health = 100;
 
     constructor({radius, scene, color, x, y, z, angle}){
         this.radius = radius;
@@ -34,8 +34,8 @@ class Bullet{
         this.mesh.position.x += this.angle.x;
         this.mesh.position.y += this.angle.y;
         this.mesh.position.z += this.angle.z;
-        if (this.mesh.position.x - 0 < 1 && this.mesh.position.y - 0 < 1 && this.mesh.position.z - 0 < 1) {
-            Bullet.player_health -= 10;
+        if (Math.abs(this.mesh.position.x - 0) < 1 && Math.abs(this.mesh.position.y - 0) < 1 && Math.abs(this.mesh.position.z - 0) < 1) {
+            Bullet.player_health -= 5;
             console.log("Ow");
         }
     }
