@@ -6,6 +6,7 @@ import { globals } from './globals.js';
 class Moon {
 
     static texture = new THREE.TextureLoader().load('../assets/moonTexture.jpg');
+    static rotationTheta = Math.PI / 2048;
 
     constructor({x, y, z, radius, scene}){
 
@@ -33,6 +34,12 @@ class Moon {
         this.mesh.position.z = this.z;
         this.mesh.layers.enable(globals.BLOOM_SCENE);
         this.scene.add(this.mesh);
+
+    }
+
+    animate(){
+
+        this.mesh.rotateY(Moon.rotationTheta);
 
     }
 

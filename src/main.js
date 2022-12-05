@@ -356,6 +356,7 @@ function animate(){
     RobotModel.animateAll(scene);
     Bullet.animateAll();
     Laser.animateAll();
+    moon.animate();
 
     camera.layers.set(globals.BLOOM_SCENE);
     bloomComposer.render();
