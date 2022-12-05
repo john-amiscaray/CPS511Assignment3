@@ -1,6 +1,5 @@
 import { globals } from "./globals.js";
 import * as THREE from 'three';
-import { RobotModel } from "./robot.js";
 
 const cannonTexture = new THREE.TextureLoader().load('../assets/cannonTexture.png');
 
@@ -40,7 +39,7 @@ function getCannonShaderUniforms(){
         LightPosition: { value: new THREE.Vector4(globals.pointLight.position.x, globals.pointLight.position.y, globals.pointLight.position.z, 1.0) },
         Shininess: { value: 200.0 },
         meshTexture: { value: cannonTexture },
-        isDead: { value: RobotModel.game_over },
+        isDead: { value: globals.gameOver },
         dt: { value: 0 }
     }]);
 

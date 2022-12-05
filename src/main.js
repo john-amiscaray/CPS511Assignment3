@@ -364,20 +364,20 @@ function animate(){
     renderer.clearDepth();
     renderer.render(scene, camera);
     current_robots = RobotModel.instances.length;
-    document.getElementById('level_score').innerHTML = "Level Score: " + RobotModel.level_score; 
+    document.getElementById('level_score').innerHTML = "Level Score: " + globals.levelScore; 
     document.getElementById('player_health').innerHTML = "Player Health: " + globals.playerHealth; 
-    if (RobotModel.current_level < 3){
-      document.getElementById('current_level').innerHTML = "Current Level: " + RobotModel.current_level; 
-      if (RobotModel.level_complete){
-        let previous_level = (RobotModel.current_level)-1
+    if (globals.currentLevel < 3){
+      document.getElementById('current_level').innerHTML = "Current Level: " + globals.currentLevel; 
+      if (globals.levelComplete){
+        let previous_level = (globals.currentLevel)-1
         document.getElementById('message').innerHTML = "Level " + previous_level + " completed. Standby 5 seconds for next level."; 
-        console.log("main.js LEVEL " + RobotModel.current_level + " COMPLETED");
-        RobotModel.level_complete = false;
+        console.log("main.js LEVEL " + globals.currentLevel + " COMPLETED");
+        globals.levelComplete = false;
         console.log("Standby, 5 seconds out.");
         setTimeout(() => { loadLevel(); }, 5000);
       }
     }
-    if (RobotModel.current_level == 3){
+    if (globals.currentLevel == 3){
       console.log("GAME OVER: YOU'VE WON!!!"); 
       document.getElementById('message').innerHTML = "GAME OVER: YOU'VE WON!!! Press 'r' to restart to level 0."; 
     }
@@ -391,10 +391,10 @@ function animate(){
 }
 
 function loadLevel(){
-  console.log("Level " + RobotModel.current_level + " start.")
-  document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " start."; 
+  console.log("Level " + globals.currentLevel + " start.")
+  document.getElementById('message').innerHTML = "Level " + globals.currentLevel + " start."; 
   if (current_robots == 0) {
-    for (let i = 0; i < RobotModel.level_details[RobotModel.current_level].robots; i++){
+    for (let i = 0; i < RobotModel.level_details[globals.currentLevel].robots; i++){
       robotSpawn();
     }
   }
@@ -402,19 +402,19 @@ function loadLevel(){
 }
 
 function restartLevel(){
-  if (RobotModel.current_level == 3){
-    RobotModel.current_level = 0;
+  if (globals.currentLevel == 3){
+    globals.currentLevel = 0;
   }   
-  console.log("Level " + RobotModel.current_level + " restart.")
+  console.log("Level " + globals.currentLevel + " restart.")
   RobotModel.instances.forEach(robot => {
     robot.selfDestruct();
   });
   current_robots = RobotModel.instances.length;
-  RobotModel.level_complete = false;
+  globals.levelComplete = false;
   globals.gameOver = false;
   globals.playerHealth = 100;
   console.log("Standby, 3 seconds out.");
-  document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " restart. Standby, 3 seconds.";
+  document.getElementById('message').innerHTML = "Level " + globals.currentLevel + " restart. Standby, 3 seconds.";
   setTimeout(() => { loadLevel(); }, 3000);
 }
 
