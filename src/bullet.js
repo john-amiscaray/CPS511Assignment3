@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { getGlowShaderUniforms } from './util.js';
 import { getGlowVertexShader, getGlowFragmentShader } from './shaders.js';
-import { globals } from './globals.js'
+import { globals } from './globals.js';
 
 const bulletDelZ = 5;
 
@@ -10,7 +10,7 @@ class Bullet{
     static instances = [];
     static speed = 0.5;
     static texture = new THREE.TextureLoader().load( '../assets/bulletTexture.png' );
-    
+
     constructor({radius, scene, x, y, z, angle}){
         this.radius = radius;
         this.scene = scene;
@@ -43,6 +43,13 @@ class Bullet{
         this.mesh.position.x += this.angle.x;
         this.mesh.position.y += this.angle.y;
         this.mesh.position.z += this.angle.z;
+        
+        if (Math.abs(this.mesh.position.x - globals.playerPosition.x) < 1 
+            && Math.abs(this.mesh.position.y - globals.playerPosition.y) < 1
+            && Math.abs(this.mesh.position.z - globals.playerPosition.z) < 1) {
+            globals.playerHealth -= 5;
+            console.log("Ow");
+        }
     }
 
     static animateAll(){

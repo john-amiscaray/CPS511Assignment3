@@ -334,6 +334,7 @@ camera.position.z = 5;
 camera.position.y = 1.5;
 camera.layers.set( globals.BLOOM_SCENE );
 camera.layers.set( globals.ENTIRE_SCENE );
+globals.playerPosition = camera.position;
 
 scene.add(pointLight, sunLight);
 globals.pointLight = pointLight;
@@ -362,6 +363,7 @@ function animate(){
     renderer.render(scene, camera);
     current_robots = RobotModel.instances.length;
     document.getElementById('level_score').innerHTML = "Level Score: " + RobotModel.level_score; 
+    document.getElementById('player_health').innerHTML = "Player Health: " + globals.playerHealth; 
     if (RobotModel.current_level < 3){
       document.getElementById('current_level').innerHTML = "Current Level: " + RobotModel.current_level; 
       if (RobotModel.level_complete){
@@ -379,6 +381,10 @@ function animate(){
     }
     if (RobotModel.game_over){
       document.getElementById('message').innerHTML = "GAME OVER: A ROBOT LEAKED THROUGH! Press 'r' to restart the level."; 
+    }
+    if (globals.playerHealth <= 0){
+      RobotModel.game_over = true;
+      document.getElementById('message').innerHTML = "GAME OVER: YOU LOST ALL YOUR HEALTH! Press 'r' to restart the level.";
     }
 }
 
@@ -404,6 +410,7 @@ function restartLevel(){
   current_robots = RobotModel.instances.length;
   RobotModel.level_complete = false;
   RobotModel.game_over = false;
+  globals.playerHealth = 100;
   console.log("Standby, 3 seconds out.");
   document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " restart. Standby, 3 seconds.";
   setTimeout(() => { loadLevel(); }, 3000);
