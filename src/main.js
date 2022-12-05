@@ -348,7 +348,7 @@ function animate(){
     requestAnimationFrame(animate);
 
     cannonUniform.dt.value = clock.getElapsedTime();
-    cannonUniform.isDead.value = globals.playerHealth <= 0;
+    cannonUniform.isDead.value = RobotModel.game_over;
     console.log(cannonUniform.isDead.value)
     renderer.autoClear = false;
     renderer.clear();
