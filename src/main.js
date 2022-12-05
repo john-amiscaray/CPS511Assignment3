@@ -8,12 +8,26 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { getStandardFragmentShader, getStandardVertexShader } from "./shaders.js";
 import { globals } from "./globals.js";
 import { getShaderUniforms } from "./util.js";
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 
 const KEYS = {
   'a': 65,
   's': 83,
   'w': 87,
   'd': 68,
+};
+
+const bloomLayer = new THREE.Layers();
+bloomLayer.set( globals.BLOOM_SCENE );
+
+const params = {
+  exposure: 1,
+  bloomStrength: 5,
+  bloomThreshold: 0,
+  bloomRadius: 0,
+  scene: 'Scene with Glow'
 };
   
 function clamp(x, a, b) {
@@ -289,26 +303,34 @@ class FirstPersonCameraController {
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
+const renderScene = new RenderPass( scene, camera );
+
+const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+bloomPass.threshold = params.bloomThreshold;
+bloomPass.strength = params.bloomStrength;
+bloomPass.radius = params.bloomRadius;
+
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg')
 });
 
+const bloomComposer = new EffectComposer( renderer );
+bloomComposer.addPass( renderScene );
+bloomComposer.addPass( bloomPass );
+
 const pointLight = new THREE.PointLight(0xffffff);
 pointLight.position.set(0,7,-5);
 
-const lightHelper = new THREE.PointLightHelper(pointLight);
 const sunLight = new THREE.HemisphereLight(0x404040, 0xFFFFFF, 0.5);
-const backgroundTexture = new THREE.TextureLoader().load('../assets/background.png');
 
-scene.background = backgroundTexture;
-
-scene.add(lightHelper);
 
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 camera.position.z = 5;
 camera.position.y = 1.5;
+camera.layers.set( globals.BLOOM_SCENE );
+camera.layers.set( globals.ENTIRE_SCENE );
 
 scene.add(pointLight, sunLight);
 globals.pointLight = pointLight;
@@ -321,9 +343,19 @@ function robotSpawn(){
 
 function animate(){
     requestAnimationFrame(animate);
+
+    renderer.autoClear = false;
+    renderer.clear();
+
     RobotModel.animateAll(scene);
     Bullet.animateAll();
     Laser.animateAll();
+
+    camera.layers.set(globals.BLOOM_SCENE);
+    bloomComposer.render();
+
+    camera.layers.set(globals.ENTIRE_SCENE);
+    renderer.clearDepth();
     renderer.render(scene, camera);
 }
 

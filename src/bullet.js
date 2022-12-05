@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { getGlowShaderUniforms } from './util.js';
 import { getGlowVertexShader, getGlowFragmentShader } from './shaders.js';
+import { globals } from './globals.js'
 
 const bulletDelZ = 5;
 
@@ -35,6 +36,7 @@ class Bullet{
         this.pathAxis = new THREE.Vector3(0, 1, 0);
         this.pathAxis = this.pathAxis.applyEuler(new THREE.Euler(0, 0, this.angle)).normalize();
         this.pathAxis.multiplyScalar(Bullet.speed);
+        this.mesh.layers.enable(globals.BLOOM_SCENE);
     }
 
     animate(){
