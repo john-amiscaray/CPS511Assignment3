@@ -348,7 +348,7 @@ function animate(){
     requestAnimationFrame(animate);
 
     cannonUniform.dt.value = clock.getElapsedTime();
-    cannonUniform.isDead.value = RobotModel.game_over;
+    cannonUniform.isDead.value = globals.gameOver;
     console.log(cannonUniform.isDead.value)
     renderer.autoClear = false;
     renderer.clear();
@@ -381,11 +381,11 @@ function animate(){
       console.log("GAME OVER: YOU'VE WON!!!"); 
       document.getElementById('message').innerHTML = "GAME OVER: YOU'VE WON!!! Press 'r' to restart to level 0."; 
     }
-    if (RobotModel.game_over){
+    if (globals.gameOver){
       document.getElementById('message').innerHTML = "GAME OVER: A ROBOT LEAKED THROUGH! Press 'r' to restart the level.";
     }
     if (globals.playerHealth <= 0){
-      RobotModel.game_over = true;
+      globals.gameOver = true;
       document.getElementById('message').innerHTML = "GAME OVER: YOU LOST ALL YOUR HEALTH! Press 'r' to restart the level.";
     }
 }
@@ -411,7 +411,7 @@ function restartLevel(){
   });
   current_robots = RobotModel.instances.length;
   RobotModel.level_complete = false;
-  RobotModel.game_over = false;
+  globals.gameOver = false;
   globals.playerHealth = 100;
   console.log("Standby, 3 seconds out.");
   document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " restart. Standby, 3 seconds.";
