@@ -362,7 +362,7 @@ function animate(){
     renderer.render(scene, camera);
     current_robots = RobotModel.instances.length;
     document.getElementById('level_score').innerHTML = "Level Score: " + RobotModel.level_score; 
-    document.getElementById('player_health').innerHTML = "Player Health: " + Bullet.player_health; 
+    document.getElementById('player_health').innerHTML = "Player Health: " + globals.player_health; 
     if (RobotModel.current_level < 3){
       document.getElementById('current_level').innerHTML = "Current Level: " + RobotModel.current_level; 
       if (RobotModel.level_complete){
