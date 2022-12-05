@@ -26,7 +26,7 @@ class RobotModel{
         }
     ];
     static level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length;
-
+    static game_over = false;
 
     constructor(x, y, z, scene){
         this.robotBodyWidth = 0.75;
@@ -253,6 +253,7 @@ class RobotModel{
             if(robot.robotBody.position.z > robotDelZ){
                 robot.selfDestruct();
                 console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
+                RobotModel.game_over = true;
             }
         });
         

@@ -2,13 +2,11 @@ import { RobotModel } from "./robot.js";
 import { getRandomInRange } from "./util.js";
 import { Bullet } from "./bullet.js";
 import { Laser } from "./laser.js";
-//import * as THREE from 'https://cdn.skypack.dev/three@0.136';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import './index.css'
 
-
-
-let current_robots = RobotModel.instances.length; //0
+let current_robots = RobotModel.instances.length; 
 
 const KEYS = {
   'a': 65,
@@ -55,7 +53,6 @@ function shootLaser() {
     angle: Euler_
   });
   laser.draw();
-  //aconsole.log("main.js level_score: " + RobotModel.level_score);
 }
 
 class InputController {
@@ -134,7 +131,6 @@ class InputController {
       if (e.keyCode == KEYS['spacebar']){
         shootLaser();
       }
-      //console.log ("keyCode: " + e.keyCode);
     }
   
     onKeyUp_(e) {
@@ -153,10 +149,6 @@ class InputController {
       if (this.previous_ !== null) {
         this.current_.mouseXDelta = this.current_.mouseX - this.previous_.mouseX;
         this.current_.mouseYDelta = this.current_.mouseY - this.previous_.mouseY;
-  
-        //console.log("this.current_.mouseX: " + this.current_.mouseX)
-        //console.log("this.current_.mouseY: " + this.current_.mouseY)
-  
         this.previous_ = {...this.current_};
       }
     }
@@ -183,9 +175,7 @@ class FirstPersonCamera {
   
     updateCamera_(_) {
       this.camera_.quaternion.copy(this.rotation_);
-      this.camera_.position.copy(this.translation_);
-      //this.camera_.position.y += Math.sin(this.headBobTimer_ * 10) * 1.5;
-  
+      this.camera_.position.copy(this.translation_);  
       const forward = new THREE.Vector3(0, 0, -1);
       forward.applyQuaternion(this.rotation_);
   
@@ -345,19 +335,30 @@ function animate(){
     Laser.animateAll();
     renderer.render(scene, camera);
     current_robots = RobotModel.instances.length;
-    if (RobotModel.level_complete && RobotModel.current_level < 3){
-      console.log("main.js LEVEL " + RobotModel.current_level + " COMPLETED");
-      RobotModel.level_complete = false;
-      console.log("Standby, 5 seconds out.");
-      setTimeout(() => { loadLevel(); }, 5000);
+    document.getElementById('level_score').innerHTML = "Level Score: " + RobotModel.level_score; 
+    if (RobotModel.current_level < 3){
+      document.getElementById('current_level').innerHTML = "Current Level: " + RobotModel.current_level; 
+      if (RobotModel.level_complete){
+        let previous_level = (RobotModel.current_level)-1
+        document.getElementById('message').innerHTML = "Level " + previous_level + " completed. Standby 5 seconds for next level."; 
+        console.log("main.js LEVEL " + RobotModel.current_level + " COMPLETED");
+        RobotModel.level_complete = false;
+        console.log("Standby, 5 seconds out.");
+        setTimeout(() => { loadLevel(); }, 5000);
+      }
     }
     if (RobotModel.current_level == 3){
       console.log("GAME OVER: YOU'VE WON!!!"); 
+      document.getElementById('message').innerHTML = "GAME OVER: YOU'VE WON!!! Press 'r' to restart to level 0."; 
+    }
+    if (RobotModel.game_over){
+      document.getElementById('message').innerHTML = "GAME OVER: A ROBOT LEAKED THROUGH! Press 'r' to restart the level."; 
     }
 }
 
 function loadLevel(){
   console.log("Level " + RobotModel.current_level + " start.")
+  document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " start."; 
   if (current_robots == 0) {
     for (let i = 0; i < RobotModel.level_details[RobotModel.current_level].robots; i++){
       robotSpawn();
@@ -376,7 +377,9 @@ function restartLevel(){
   });
   current_robots = RobotModel.instances.length;
   RobotModel.level_complete = false;
+  RobotModel.game_over = false;
   console.log("Standby, 3 seconds out.");
+  document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " restart. Standby, 3 seconds.";
   setTimeout(() => { loadLevel(); }, 3000);
 }
 
@@ -384,8 +387,6 @@ console.log("Game start.")
 loadLevel();
 animate();
 
-/*setInterval(robotSpawn, 1500);
-robotSpawn();*/
 
 let _APP = null;
 
