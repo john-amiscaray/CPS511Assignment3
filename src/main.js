@@ -11,6 +11,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import './index.css'
+import { Moon } from './moon.js'
 
 let current_robots = RobotModel.instances.length; 
 
@@ -323,7 +324,8 @@ const pointLight = new THREE.PointLight(0xffffff);
 pointLight.position.set(0,7,-5);
 
 const sunLight = new THREE.HemisphereLight(0x404040, 0xFFFFFF, 0.5);
-
+const moon = new Moon({x: pointLight.position.x, y: pointLight.position.y, z: pointLight.position.z, radius: 2, scene: scene});
+moon.draw();
 
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
