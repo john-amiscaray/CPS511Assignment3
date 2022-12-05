@@ -10,8 +10,7 @@ import { getShaderUniforms } from "./util.js";
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import './index.css'
-import { Moon } from './moon.js'
+import { Moon } from './moon.js';
 
 let current_robots = RobotModel.instances.length; 
 
@@ -380,7 +379,7 @@ function animate(){
       document.getElementById('message').innerHTML = "GAME OVER: YOU'VE WON!!! Press 'r' to restart to level 0."; 
     }
     if (RobotModel.game_over){
-      document.getElementById('message').innerHTML = "GAME OVER: A ROBOT LEAKED THROUGH! Press 'r' to restart the level."; 
+      document.getElementById('message').innerHTML = "GAME OVER: A ROBOT LEAKED THROUGH! Press 'r' to restart the level.";
     }
     if (globals.playerHealth <= 0){
       RobotModel.game_over = true;
