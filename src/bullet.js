@@ -43,8 +43,11 @@ class Bullet{
         this.mesh.position.x += this.angle.x;
         this.mesh.position.y += this.angle.y;
         this.mesh.position.z += this.angle.z;
-        if (Math.abs(this.mesh.position.x - 0) < 1 && Math.abs(this.mesh.position.y - 0) < 1 && Math.abs(this.mesh.position.z - 0) < 1) {
-            globals.player_health -= 5;
+        
+        if (Math.abs(this.mesh.position.x - globals.playerPosition.x) < 1 
+            && Math.abs(this.mesh.position.y - globals.playerPosition.y) < 1
+            && Math.abs(this.mesh.position.z - globals.playerPosition.z) < 1) {
+            globals.playerHealth -= 5;
             console.log("Ow");
         }
     }
