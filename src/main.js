@@ -382,7 +382,7 @@ function animate(){
     if (RobotModel.game_over){
       document.getElementById('message').innerHTML = "GAME OVER: A ROBOT LEAKED THROUGH! Press 'r' to restart the level."; 
     }
-    if (Bullet.playerHealth <= 0){
+    if (globals.playerHealth <= 0){
       RobotModel.game_over = true;
       document.getElementById('message').innerHTML = "GAME OVER: YOU LOST ALL YOUR HEALTH! Press 'r' to restart the level.";
     }
