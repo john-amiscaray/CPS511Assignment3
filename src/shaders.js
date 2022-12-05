@@ -98,7 +98,7 @@ function getCannonVertexShader(){
         Normal = normalize(normalMatrix * normal);
         Position = vec3(modelViewMatrix * vec4(position, 1.0));
         if(isDead){
-            gl_Position = (projectionMatrix * modelViewMatrix * vec4(position, 1.0)) + vec4(sin(dt * 35.0) * 0.1, 0.0, 0.0, 0.0); 
+            gl_Position = (projectionMatrix * modelViewMatrix * vec4(position, 1.0)) + vec4(sin(dt * 20.0) * 0.1, 0.0, 0.0, 0.0); 
         }else{
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
