@@ -24,3 +24,11 @@ To Start Server:
 To Visit App:
 
 `http://localhost:5173/`  
+
+## Bonus marks
+
+1. The defensive cannon fires a laser instead of a projectile.
+2. Levels are added to game with a score displayed. Each level parameters are as follows:
+- Level 0: Spawns 7 bots and slow walking speed
+- Level 1: Spawns 10 bots and moderate walking speed
+- Level 2: Spawns 20 bots and fast walking speed
