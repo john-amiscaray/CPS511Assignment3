@@ -41,6 +41,7 @@ class RobotModel{
         this.scene = scene;
         this.stepAnimationPosition = 0;
         this.gunSpinAnimationPosition = 0;
+        this.deathAnimationControl = 0;
         this.bulletFiringControl = 0;
         this.isLeftSideStep = true;
         this.alive = true;
@@ -249,46 +250,31 @@ class RobotModel{
         this.scene.remove(this.rightLeg);
         this.scene.remove(this.rightFoot);
         this.scene.remove(this.leftFoot);
-        RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+        RobotModel.instances = RobotModel.instances.filter(robot => robot !== this);
+        RobotModel.checkWinCondition();
     }
 
     deathAnimation(){
-        this.robotBody.material.color.setHex(0xFF0000);
-        this.robotBody.position.y = -this.robotBodyWidth-this.hipLength;
-        this.leftHip.position.y  = -this.robotBodyWidth-this.hipLength;
-        this.rightHip.position.y  = -this.robotBodyWidth-this.hipLength;
-        /*
-        for (let i = 0; i <= 90; i++){
-            let rad_angle = -i* Math.PI/180;
-            this.robotBody.rotateX(rad_angle);
-            this.leftHip.rotateX(rad_angle);
-            this.rightHip.rotateX(rad_angle);
-        }*/
-
-        this.robotBody.rotateX(-Math.PI/2);
-        this.leftHip.rotateX(-Math.PI/2);
-        this.rightHip.rotateX(-Math.PI/2);
+        if (this.alive){ 
+            return;
+        };
+        this.deathAnimationControl += animationIncrement;
+        console.log(this.deathAnimationControl);
+        this.robotBody.rotateX(-animationIncrement);
+        this.leftHip.rotateX(-animationIncrement);
+        this.rightHip.rotateX(-animationIncrement);
+        this.robotBody.position.y += animationIncrement;
+        this.leftHip.position.y += animationIncrement;
+        this.rightHip.position.y += animationIncrement;
+        if(this.deathAnimationControl >= (Math.PI / 2)){
+            this.selfDestruct();
+        }
     }
     
     diesFromLaser(){
-        if (this.alive){
-            this.alive = false;
 
-            this.deathAnimation();
-            //this.robotBody.rotateX(-Math.PI/2);
-            setTimeout(() => { this.selfDestruct(); }, 5000);
-            if (globals.currentLevel < 3){
-                globals.levelScore = RobotModel.level_details[globals.currentLevel].robots - RobotModel.instances.length;
-                console.log("Nice kill! RobotModel.level_score:" + globals.levelScore);
-                // If all robots are defeated, start next level
-                if (globals.levelScore == RobotModel.level_details[globals.levelComplete].robots && globals.levelComplete == false){
-                    console.log("robot.js Level " + globals.currentLevel + " Completed!")
-                    globals.currentLevel += 1;
-                    globals.levelComplete = true;
-                    globals.levelScore = 0;
-                }
-            }
-        }
+        this.alive = false;
+
     }
 
     static robotAnimate(){
@@ -298,6 +284,7 @@ class RobotModel{
                 robot.gunSpinAnimation();
                 robot.shootAnimation();
             }
+            robot.deathAnimation();
         });
     }
     
@@ -321,6 +308,22 @@ class RobotModel{
 
         RobotModel.moveRobotsForward(scene);
         RobotModel.robotAnimate();
+
+    }
+    
+    static checkWinCondition(){
+
+        if (globals.currentLevel < 3){
+            globals.levelScore = RobotModel.level_details[globals.currentLevel].robots - RobotModel.instances.length;
+            console.log("Nice kill! RobotModel.level_score:" + globals.levelScore);
+            // If all robots are defeated, start next level
+            if (globals.levelScore == RobotModel.level_details[globals.currentLevel].robots && globals.levelComplete == false){
+                console.log("robot.js Level " + globals.currentLevel + " Completed!")
+                globals.currentLevel += 1;
+                globals.levelComplete = true;
+                globals.levelScore = 0;
+            }
+        }
 
     }
 
