@@ -33,9 +33,9 @@ class Laser{
           });
         this.mesh = new THREE.Mesh(laserGeo, laserMat);
         Laser.instances.push(this);
-        this.mesh.position.x = this.angle.x;
-        this.mesh.position.y = this.angle.y;
-        this.mesh.position.z = this.angle.z;
+        this.mesh.position.x = this.x;
+        this.mesh.position.y = this.y;
+        this.mesh.position.z = this.z;
 
         this.mesh.rotateX(this.angle.y); 
         this.mesh.rotateY(-this.angle.x); 
