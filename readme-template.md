@@ -5,7 +5,7 @@ Robot Attack
 A 3D “Star Wars Planet Hoth” style game of walker bots attacking an interactive defensive cannon.
 
 
-## Project Screen Shot(s)
+## Project Screenshot:
 
 ![Screenshot](/assets/gameplay_screenshot_medium.png?raw=true)
 
