@@ -297,6 +297,7 @@ class RobotModel{
                 robot.selfDestruct();
                 console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
                 globals.gameOver = true;
+                globals.playerHealth = 0;
             }
         });
         

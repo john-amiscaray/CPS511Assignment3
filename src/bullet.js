@@ -47,8 +47,14 @@ class Bullet{
         if (Math.abs(this.mesh.position.x - globals.playerPosition.x) < 1 
             && Math.abs(this.mesh.position.y - globals.playerPosition.y) < 1
             && Math.abs(this.mesh.position.z - globals.playerPosition.z) < 1) {
-            globals.playerHealth -= 5;
-            console.log("Ow");
+            if (globals.playerHealth > 0){
+                globals.playerHealth -= 5;
+                console.log("Ow");
+            } else {
+                globals.playerHealth = 0;
+            }
+            
+            
         }
     }
 
