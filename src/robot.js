@@ -197,6 +197,8 @@ class RobotModel{
         RobotModel.instances.push(this);
         if (globals.currentLevel < 3){
             globals.levelScore = RobotModel.level_details[globals.currentLevel].robots - RobotModel.instances.length;
+            //console.log("RobotModel.instances.length:" + RobotModel.instances.length);
+            //console.log("globals.levelScore:" + globals.levelScore);
         } 
     }
 
@@ -253,7 +255,7 @@ class RobotModel{
     }
 
     deathAnimation(){
-        this.robotBody.material.color.setHex(0xFF0000);
+        //this.robotBody.material.color.setHex(0xFF0000);
         this.robotBody.position.y = -this.robotBodyWidth-this.hipLength;
         this.leftHip.position.y  = -this.robotBodyWidth-this.hipLength;
         this.rightHip.position.y  = -this.robotBodyWidth-this.hipLength;
@@ -273,15 +275,17 @@ class RobotModel{
     diesFromLaser(){
         if (this.alive){
             this.alive = false;
-
             this.deathAnimation();
-            //this.robotBody.rotateX(-Math.PI/2);
             setTimeout(() => { this.selfDestruct(); }, 5000);
+            RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
             if (globals.currentLevel < 3){
                 globals.levelScore = RobotModel.level_details[globals.currentLevel].robots - RobotModel.instances.length;
+                console.log("RobotModel.instances.length:" + RobotModel.instances.length);
+                console.log("globals.levelScore:" + globals.levelScore);
                 console.log("Nice kill! RobotModel.level_score:" + globals.levelScore);
+                
                 // If all robots are defeated, start next level
-                if (globals.levelScore == RobotModel.level_details[globals.levelComplete].robots && globals.levelComplete == false){
+                if (globals.levelScore == RobotModel.level_details[globals.currentLevel].robots && globals.levelComplete == false){
                     console.log("robot.js Level " + globals.currentLevel + " Completed!")
                     globals.currentLevel += 1;
                     globals.levelComplete = true;
@@ -304,6 +308,7 @@ class RobotModel{
     static moveRobotsForward(scene){
         RobotModel.instances.forEach(robot => {
             if(robot.robotBody.position.z > robotDelZ){
+                
                 robot.selfDestruct();
                 console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
                 globals.gameOver = true;
@@ -311,9 +316,11 @@ class RobotModel{
         });
         
         RobotModel.instances.forEach(robot => {
-            robot.robotBody.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
-            robot.leftHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
-            robot.rightHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+            if (robot.alive){
+                robot.robotBody.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+                robot.leftHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+                robot.rightHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+            }
         });
     }
 
