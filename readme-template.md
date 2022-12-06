@@ -1,6 +1,6 @@
 ## CPS 511 Assignment 3
 
-Robot Attack
+Robot Attack by John Amiscaray & Ian Zhu
 
 A 3D “Star Wars Planet Hoth” style game of walker bots attacking an interactive defensive cannon.
 
