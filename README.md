@@ -39,7 +39,7 @@ To Visit App:
 - Death animations for the robots (they do backflips!)
 - Damaged animation for defensive cannon when it reaches 0 health
 - Defensive cannon uses a custom mesh
-- Vertex and fragment shaders are implemented to render lightning effects such as the laser's glow
+- Vertex and fragment shaders are implemented to render lightning effects such as the cannon laser's and robot bullets' glow
 
 ## Bonus marks
 
