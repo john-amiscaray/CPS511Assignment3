@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { getGlowShaderUniforms } from './util.js';
+import { getGlowVertexShader, getGlowFragmentShader } from './shaders.js';
+import { globals } from './globals.js';
 
 const bulletDelZ = 5;
 
@@ -6,12 +9,11 @@ class Bullet{
 
     static instances = [];
     static speed = 0.5;
-    static player_health = 100;
+    static texture = new THREE.TextureLoader().load( '../assets/bulletTexture.png' );
 
-    constructor({radius, scene, color, x, y, z, angle}){
+    constructor({radius, scene, x, y, z, angle}){
         this.radius = radius;
         this.scene = scene;
-        this.color = color;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -20,7 +22,13 @@ class Bullet{
 
     draw(){
         const bulletGeo = new THREE.SphereGeometry(this.radius);
-        const bulletMat = new THREE.MeshStandardMaterial({ color: this.color });
+        const uniforms = getGlowShaderUniforms(Bullet.texture);
+        const bulletMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getGlowVertexShader(),
+            fragmentShader: getGlowFragmentShader(),
+            lights: true
+        });
         this.mesh = new THREE.Mesh(bulletGeo, bulletMat);
         Bullet.instances.push(this);
         this.mesh.position.set(this.x, this.y, this.z);
@@ -28,14 +36,18 @@ class Bullet{
         this.pathAxis = new THREE.Vector3(0, 1, 0);
         this.pathAxis = this.pathAxis.applyEuler(new THREE.Euler(0, 0, this.angle)).normalize();
         this.pathAxis.multiplyScalar(Bullet.speed);
+        this.mesh.layers.enable(globals.BLOOM_SCENE);
     }
 
     animate(){
         this.mesh.position.x += this.angle.x;
         this.mesh.position.y += this.angle.y;
         this.mesh.position.z += this.angle.z;
-        if (Math.abs(this.mesh.position.x - 0) < 1 && Math.abs(this.mesh.position.y - 1.5) < 1 && Math.abs(this.mesh.position.z - 0) < 1) {
-            Bullet.player_health -= 5;
+        
+        if (Math.abs(this.mesh.position.x - globals.playerPosition.x) < 1 
+            && Math.abs(this.mesh.position.y - globals.playerPosition.y) < 1
+            && Math.abs(this.mesh.position.z - globals.playerPosition.z) < 1) {
+            globals.playerHealth -= 5;
             console.log("Ow");
         }
     }

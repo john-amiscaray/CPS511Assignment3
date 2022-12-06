@@ -4,7 +4,13 @@ import { Bullet } from "./bullet.js";
 import { Laser } from "./laser.js";
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import './index.css'
+import { getCannonFragmentShader, getCannonVertexShader } from "./shaders.js";
+import { globals } from "./globals.js";
+import { getCannonShaderUniforms } from "./util.js";
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { Moon } from './moon.js';
 
 let current_robots = RobotModel.instances.length; 
 
@@ -16,27 +22,21 @@ const KEYS = {
   'spacebar': 32,
   'r': 82
 };
+
+const bloomLayer = new THREE.Layers();
+bloomLayer.set( globals.BLOOM_SCENE );
+
+const params = {
+  exposure: 1,
+  bloomStrength: 5,
+  bloomThreshold: 0,
+  bloomRadius: 0,
+  scene: 'Scene with Glow'
+};
   
 function clamp(x, a, b) {
   return Math.min(Math.max(x, a), b);
 }
-
-let objLoader = new OBJLoader();
-let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
-
-objLoader.load('../assets/cannon.obj', mesh => {
-
-  mesh.position.y = 1;
-  scene.add(mesh);
-  cannon = mesh;
-  cannon.traverse(child => {
-    if(child.isMesh){
-      child.material = new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load('../assets/cannonTexture.png') });
-    }
-  });
-  scene.add(cannon);
-  
-});
 
 function shootLaser() {
   let playerDirection = new THREE.Vector3();
@@ -128,7 +128,7 @@ class InputController {
         console.log ("Restart level");
         restartLevel();
       }
-      if (e.keyCode == KEYS['spacebar']){
+      if (e.keyCode == KEYS['spacebar'] && !globals.gameOver){
         shootLaser();
       }
     }
@@ -303,24 +303,40 @@ class FirstPersonCameraController {
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const clock = new THREE.Clock();
+const renderScene = new RenderPass( scene, camera );
 
-const renderer = new THREE.WebGLRenderer();
+const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+bloomPass.threshold = params.bloomThreshold;
+bloomPass.strength = params.bloomStrength;
+bloomPass.radius = params.bloomRadius;
+
+const renderer = new THREE.WebGLRenderer({
+    canvas: document.querySelector('#bg')
+});
+
+const bloomComposer = new EffectComposer( renderer );
+bloomComposer.addPass( renderScene );
+bloomComposer.addPass( bloomPass );
 
 const pointLight = new THREE.PointLight(0xffffff);
 pointLight.position.set(0,7,-5);
 
-const lightHelper = new THREE.PointLightHelper(pointLight);
 const sunLight = new THREE.HemisphereLight(0x404040, 0xFFFFFF, 0.5);
-
-scene.add(lightHelper);
+const moon = new Moon({x: pointLight.position.x, y: pointLight.position.y, z: pointLight.position.z, radius: 2, scene: scene});
+moon.draw();
 
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 camera.position.z = 5;
 camera.position.y = 1.5;
+camera.layers.set( globals.BLOOM_SCENE );
+camera.layers.set( globals.ENTIRE_SCENE );
+globals.playerPosition = camera.position;
 
 scene.add(pointLight, sunLight);
+globals.pointLight = pointLight;
 
 function robotSpawn(){
     let rand = getRandomInRange(-20, 20);
@@ -330,42 +346,56 @@ function robotSpawn(){
 
 function animate(){
     requestAnimationFrame(animate);
+
+    cannonUniform.dt.value = clock.getElapsedTime();
+    cannonUniform.isDead.value = globals.gameOver;
+    
+    renderer.autoClear = false;
+    renderer.clear();
+
     RobotModel.animateAll(scene);
     Bullet.animateAll();
     Laser.animateAll();
+    moon.animate();
+
+    camera.layers.set(globals.BLOOM_SCENE);
+    bloomComposer.render();
+
+    camera.layers.set(globals.ENTIRE_SCENE);
+    renderer.clearDepth();
     renderer.render(scene, camera);
     current_robots = RobotModel.instances.length;
-    document.getElementById('level_score').innerHTML = "Level Score: " + RobotModel.level_score; 
-    document.getElementById('player_health').innerHTML = "Player Health: " + Bullet.player_health; 
-    if (RobotModel.current_level < 3){
-      document.getElementById('current_level').innerHTML = "Current Level: " + RobotModel.current_level; 
-      if (RobotModel.level_complete){
-        let previous_level = (RobotModel.current_level)-1
+    document.getElementById('level_score').innerHTML = "Level Score: " + globals.levelScore; 
+    document.getElementById('player_health').innerHTML = "Player Health: " + globals.playerHealth; 
+    if (globals.currentLevel < 3){
+      document.getElementById('current_level').innerHTML = "Current Level: " + globals.currentLevel; 
+      if (globals.levelComplete){
+        let previous_level = (globals.currentLevel)-1
         document.getElementById('message').innerHTML = "Level " + previous_level + " completed. Standby 5 seconds for next level."; 
-        console.log("main.js LEVEL " + RobotModel.current_level + " COMPLETED");
-        RobotModel.level_complete = false;
+        console.log("main.js LEVEL " + globals.currentLevel + " COMPLETED");
+        globals.levelComplete = false;
         console.log("Standby, 5 seconds out.");
         setTimeout(() => { loadLevel(); }, 5000);
       }
     }
-    if (RobotModel.current_level == 3){
+    if (globals.currentLevel == 3){
       console.log("GAME OVER: YOU'VE WON!!!"); 
       document.getElementById('message').innerHTML = "GAME OVER: YOU'VE WON!!! Press 'r' to restart to level 0."; 
     }
-    if (RobotModel.game_over){
-      document.getElementById('message').innerHTML = "GAME OVER: A ROBOT LEAKED THROUGH! Press 'r' to restart the level."; 
+    if (globals.gameOver){
+      document.getElementById('message').innerHTML = "GAME OVER: A ROBOT LEAKED THROUGH! Press 'r' to restart the level.";
     }
-    if (Bullet.player_health <= 0){
-      RobotModel.game_over = true;
+    if (globals.playerHealth <= 0){
+      globals.gameOver = true;
       document.getElementById('message').innerHTML = "GAME OVER: YOU LOST ALL YOUR HEALTH! Press 'r' to restart the level.";
     }
 }
 
 function loadLevel(){
-  console.log("Level " + RobotModel.current_level + " start.")
-  document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " start."; 
+  console.log("Level " + globals.currentLevel + " start.")
+  document.getElementById('message').innerHTML = "Level " + globals.currentLevel + " start."; 
   if (current_robots == 0) {
-    for (let i = 0; i < RobotModel.level_details[RobotModel.current_level].robots; i++){
+    for (let i = 0; i < RobotModel.level_details[globals.currentLevel].robots; i++){
       robotSpawn();
     }
   }
@@ -373,21 +403,44 @@ function loadLevel(){
 }
 
 function restartLevel(){
-  if (RobotModel.current_level == 3){
-    RobotModel.current_level = 0;
+  if (globals.currentLevel == 3){
+    globals.currentLevel = 0;
   }   
-  console.log("Level " + RobotModel.current_level + " restart.")
+  console.log("Level " + globals.currentLevel + " restart.")
   RobotModel.instances.forEach(robot => {
     robot.selfDestruct();
   });
   current_robots = RobotModel.instances.length;
-  RobotModel.level_complete = false;
-  RobotModel.game_over = false;
-  Bullet.player_health = 100;
+  globals.levelComplete = false;
+  globals.gameOver = false;
+  globals.playerHealth = 100;
   console.log("Standby, 3 seconds out.");
-  document.getElementById('message').innerHTML = "Level " + RobotModel.current_level + " restart. Standby, 3 seconds.";
+  document.getElementById('message').innerHTML = "Level " + globals.currentLevel + " restart. Standby, 3 seconds.";
   setTimeout(() => { loadLevel(); }, 3000);
 }
+
+let objLoader = new OBJLoader();
+let cannon, cannonRotZ = Math.PI / 2, cannonRotXInit = -cannonRotZ;
+
+const cannonUniform = getCannonShaderUniforms();
+
+objLoader.load('../assets/cannon.obj', mesh => {
+
+  mesh.position.y = 1;
+  cannon = mesh;
+  cannon.traverse(child => {
+    if(child.isMesh){
+      child.material = new THREE.ShaderMaterial({ 
+        uniforms: cannonUniform,
+        vertexShader: getCannonVertexShader(),
+        fragmentShader: getCannonFragmentShader(),
+        lights: true
+      });
+    }
+  });
+  scene.add(cannon);
+  
+});
 
 console.log("Game start.")
 loadLevel();

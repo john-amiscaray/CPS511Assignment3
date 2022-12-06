@@ -1,11 +1,15 @@
 import * as THREE from 'three';
 import { Euler } from 'three';
 import { RobotModel } from './robot';
+import { getGlowShaderUniforms } from './util.js';
+import { getGlowFragmentShader, getGlowVertexShader } from './shaders.js';
+import { globals } from './globals.js';
 
 class Laser{
 
     static instances = [];
     static speed = 0.5;
+    static texture = new THREE.TextureLoader().load('../assets/laserTexture.png');
 
     constructor({radius, scene, color, x, y, z, angle}){
         this.radius = radius;
@@ -20,17 +24,24 @@ class Laser{
     draw(){
         let laserHeight = 100;
         const laserGeo = new THREE.BoxGeometry( 0.25, 0.25, laserHeight );
-        const laserMat = new THREE.MeshLambertMaterial( { transparent: true, map: new THREE.TextureLoader().load('../assets/laserTexture.png') } );
+        const uniforms = getGlowShaderUniforms(Laser.texture);
+        const laserMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getGlowVertexShader(),
+            fragmentShader: getGlowFragmentShader(),
+            lights: true
+          });
         this.mesh = new THREE.Mesh(laserGeo, laserMat);
         Laser.instances.push(this);
-        this.mesh.position.x = this.angle.x;
-        this.mesh.position.y = this.angle.y;
-        this.mesh.position.z = this.angle.z;
+        this.mesh.position.x = this.x;
+        this.mesh.position.y = this.y;
+        this.mesh.position.z = this.z;
 
         this.mesh.rotateX(this.angle.y); 
         this.mesh.rotateY(-this.angle.x); 
 
         this.scene.add(this.mesh);
+        this.mesh.layers.enable(globals.BLOOM_SCENE);
         // this.ray = new THREE.Raycaster();
         // this.ray.far = laserHeight / 2;
         // this.ray.set(new THREE.Vector3(this.x, this.y, this.z), new THREE.Vector3(0, 0, 1).applyEuler(new Euler(this.angle.y, -this.angle.x, 0)).normalize().negate());

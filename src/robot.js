@@ -1,4 +1,7 @@
 import { Bullet } from "./bullet.js";
+import { getStandardVertexShader, getStandardFragmentShader } from "./shaders.js";
+import { getShaderUniforms } from "./util.js";
+import { globals } from "./globals.js";
 import * as THREE from 'three';
 
 const robotDelZ = 5;
@@ -8,8 +11,6 @@ const animationIncrement = (Math.PI / 32);
 class RobotModel{
 
     static instances = [];
-    static current_level = 0;
-    static level_complete = false;
     static level_details = [
         { 
           'robots': 7,
@@ -25,8 +26,6 @@ class RobotModel{
         'complete': false
         }
     ];
-    static level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length;
-    static game_over = false;
 
     constructor(x, y, z, scene){
         this.robotBodyWidth = 0.75;
@@ -52,12 +51,17 @@ class RobotModel{
             this.robotBodyWidth, 
             this.robotBodyLength, 
             this.robotBodyDepth);
-        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x00FF00 });
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
+        const bodyMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
+            lights: true
+          });
         const body = new THREE.Mesh(bodyGeo, bodyMat);
         body.position.x = this.bodyX;
         body.position.y = this.bodyY;
         body.position.z = this.bodyZ;
-        
         body.rotateY(this.robotAngle);
         this.scene.add(body);
         this.robotBody = body;
@@ -68,7 +72,13 @@ class RobotModel{
         this.hipLength = this.robotBodyLength / 2;
         this.hipDepth = this.robotBodyDepth / 4;
         const hipGeo = new THREE.BoxGeometry(this.hipWidth, this.hipLength, this.hipDepth);
-        const hipMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotSecondaryTexture.png' ));
+        const hipMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
+            lights: true
+          });
         const hip = new THREE.Mesh(hipGeo, hipMat);
     
         hip.position.x = (isLeft ? 0 : (-this.robotBodyWidth)) + (this.robotBody.position.x + (this.robotBodyWidth / 2));
@@ -87,9 +97,15 @@ class RobotModel{
         this.legWidth = this.hipWidth * 0.75;
         this.legLength = this.hipLength * 2;
         this.legDepth = this.hipDepth;
-        const hipGeo = new THREE.BoxGeometry(this.legWidth, this.legLength, this.legDepth);
-        const hipMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        const leg = new THREE.Mesh(hipGeo, hipMat);
+        const legGeo = new THREE.BoxGeometry(this.legWidth, this.legLength, this.legDepth);
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
+        const legMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
+            lights: true
+          });
+        const leg = new THREE.Mesh(legGeo, legMat);
     
         leg.position.y = -(this.hipLength / 2) - (this.legLength / 2);
     
@@ -107,7 +123,13 @@ class RobotModel{
         this.footLength = this.legLength / 3;
         this.footDepth = this.legDepth * 1.5;
         const footGeo = new THREE.BoxGeometry(this.footWidth, this.footLength, this.footDepth);
-        const footMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotSecondaryTexture.png' ));
+        const footMat = new THREE.ShaderMaterial({ 
+            uniforms: uniforms,
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
+            lights: true
+          });
         const foot = new THREE.Mesh(footGeo, footMat);
     
         foot.position.y = -(this.legLength / 2) - (this.footLength / 2);
@@ -127,8 +149,20 @@ class RobotModel{
             this.cannonBarrelRad, 
             this.cannonBarrelRad, 
             this.cannonBarrelHeight);
-        const cannonMat = new THREE.MeshStandardMaterial({ color: 0x54fcff });
-        const barrelMat = new THREE.MeshStandardMaterial({ color: 0x666666 });
+        const cannonUniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotSecondaryTexture.png' ));
+        const barrelUniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
+        const cannonMat = new THREE.ShaderMaterial({ 
+            uniforms: cannonUniforms,
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
+            lights: true
+            });
+        const barrelMat = new THREE.ShaderMaterial({ 
+            uniforms: barrelUniforms,
+            vertexShader: getStandardVertexShader(),
+            fragmentShader: getStandardFragmentShader(),
+            lights: true
+            });
     
         this.cannonBase = new THREE.Mesh(baseGeo, cannonMat);
         this.cannonBarrel = new THREE.Mesh(barrelGeo, barrelMat);
@@ -161,9 +195,9 @@ class RobotModel{
         this.drawFoot(false);
         this.drawCannon();
         RobotModel.instances.push(this);
-        if (RobotModel.current_level < 3){
-            RobotModel.level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length; 
-        }
+        if (globals.currentLevel < 3){
+            globals.levelScore = RobotModel.level_details[globals.currentLevel].robots - RobotModel.instances.length;
+        } 
     }
 
     stepAnimation(){
@@ -198,7 +232,6 @@ class RobotModel{
             let bullet = new Bullet({ 
                 radius: self.cannonBarrelRad, 
                 scene: self.scene, 
-                color: 0xFF0000, 
                 x: this.robotBody.position.x, 
                 y: this.robotBody.position.y,
                 z: this.robotBody.position.z,
@@ -235,23 +268,23 @@ class RobotModel{
         this.leftHip.rotateX(-Math.PI/2);
         this.rightHip.rotateX(-Math.PI/2);
     }
-
-    diesFromLaser(){    
+    
+    diesFromLaser(){
         if (this.alive){
             this.alive = false;
 
             this.deathAnimation();
             //this.robotBody.rotateX(-Math.PI/2);
             setTimeout(() => { this.selfDestruct(); }, 5000);
-            if (RobotModel.current_level < 3){
-                RobotModel.level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length;
-                console.log("Nice kill! RobotModel.level_score:" + RobotModel.level_score);
+            if (globals.currentLevel < 3){
+                globals.levelScore = RobotModel.level_details[globals.currentLevel].robots - RobotModel.instances.length;
+                console.log("Nice kill! RobotModel.level_score:" + globals.levelScore);
                 // If all robots are defeated, start next level
-                if (RobotModel.level_score == RobotModel.level_details[RobotModel.current_level].robots && RobotModel.level_complete == false){
-                    console.log("robot.js Level " + RobotModel.current_level + " Completed!")
-                    RobotModel.current_level += 1;
-                    RobotModel.level_complete = true;
-                    RobotModel.level_score = 0;
+                if (globals.levelScore == RobotModel.level_details[globals.levelComplete].robots && globals.levelComplete == false){
+                    console.log("robot.js Level " + globals.currentLevel + " Completed!")
+                    globals.currentLevel += 1;
+                    globals.levelComplete = true;
+                    globals.levelScore = 0;
                 }
             }
         }
@@ -272,16 +305,14 @@ class RobotModel{
             if(robot.robotBody.position.z > robotDelZ){
                 robot.selfDestruct();
                 console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
-                RobotModel.game_over = true;
+                globals.gameOver = true;
             }
         });
         
         RobotModel.instances.forEach(robot => {
-            if (robot.alive){
-                robot.robotBody.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
-                robot.leftHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
-                robot.rightHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
-            }
+            robot.robotBody.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+            robot.leftHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+            robot.rightHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
         });
     }
 
