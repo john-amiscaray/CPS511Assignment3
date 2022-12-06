@@ -253,6 +253,7 @@ class RobotModel{
     }
 
     deathAnimation(){
+        this.robotBody.material.color.setHex(0xFF0000);
         this.robotBody.position.y = -this.robotBodyWidth-this.hipLength;
         this.leftHip.position.y  = -this.robotBodyWidth-this.hipLength;
         this.rightHip.position.y  = -this.robotBodyWidth-this.hipLength;
