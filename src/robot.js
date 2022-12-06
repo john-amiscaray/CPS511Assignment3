@@ -41,8 +41,10 @@ class RobotModel{
         this.scene = scene;
         this.stepAnimationPosition = 0;
         this.gunSpinAnimationPosition = 0;
+        this.deathAnimationControl = 0;
         this.bulletFiringControl = 0;
         this.isLeftSideStep = true;
+        this.alive = true;
     }
 
     drawBody(){
@@ -196,6 +198,8 @@ class RobotModel{
         RobotModel.instances.push(this);
         if (globals.currentLevel < 3){
             globals.levelScore = RobotModel.level_details[globals.currentLevel].robots - RobotModel.instances.length;
+            //console.log("RobotModel.instances.length:" + RobotModel.instances.length);
+            //console.log("globals.levelScore:" + globals.levelScore);
         } 
     }
 
@@ -248,21 +252,75 @@ class RobotModel{
         this.scene.remove(this.rightLeg);
         this.scene.remove(this.rightFoot);
         this.scene.remove(this.leftFoot);
-        RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+        RobotModel.instances = RobotModel.instances.filter(robot => robot !== this);
     }
 
+    deathAnimation(){
+        if (this.alive){ 
+            return;
+        };
+        this.deathAnimationControl += animationIncrement;
+        console.log(this.deathAnimationControl);
+        this.robotBody.rotateX(-animationIncrement);
+        this.leftHip.rotateX(-animationIncrement);
+        this.rightHip.rotateX(-animationIncrement);
+        this.robotBody.position.y += animationIncrement;
+        this.leftHip.position.y += animationIncrement;
+        this.rightHip.position.y += animationIncrement;
+        if(this.deathAnimationControl >= (Math.PI / 2)){
+            this.selfDestruct();
+            RobotModel.checkWinCondition();
+        }
+    }
+    
     diesFromLaser(){
-        this.scene.remove(this.robotBody);
-        this.scene.remove(this.leftHip);
-        this.scene.remove(this.rightHip);
-        this.scene.remove(this.leftLeg);
-        this.scene.remove(this.rightLeg);
-        this.scene.remove(this.rightFoot);
-        this.scene.remove(this.leftFoot);
-        RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
+
+        this.alive = false;
+
+    }
+
+    static robotAnimate(){
+        RobotModel.instances.forEach(robot => {
+            if (robot.alive){
+                robot.stepAnimation();
+                robot.gunSpinAnimation();
+                robot.shootAnimation();
+            }
+            robot.deathAnimation();
+        });
+    }
+    
+    static moveRobotsForward(scene){
+        RobotModel.instances.forEach(robot => {
+            if(robot.robotBody.position.z > robotDelZ){
+                
+                robot.selfDestruct();
+                console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
+                globals.gameOver = true;
+            }
+        });
+        
+        RobotModel.instances.forEach(robot => {
+            if (robot.alive){
+                robot.robotBody.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+                robot.leftHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+                robot.rightHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+            }
+        });
+    }
+
+    static animateAll(scene){
+
+        RobotModel.moveRobotsForward(scene);
+        RobotModel.robotAnimate();
+
+    }
+    
+    static checkWinCondition(){
+
         if (globals.currentLevel < 3){
             globals.levelScore = RobotModel.level_details[globals.currentLevel].robots - RobotModel.instances.length;
-            console.log("Nice kill! globals.levelScore:" + globals.levelScore);
+            console.log("Nice kill! RobotModel.level_score:" + globals.levelScore);
             // If all robots are defeated, start next level
             if (globals.levelScore == RobotModel.level_details[globals.currentLevel].robots && globals.levelComplete == false){
                 console.log("robot.js Level " + globals.currentLevel + " Completed!")
@@ -271,36 +329,6 @@ class RobotModel{
                 globals.levelScore = 0;
             }
         }
-    }
-
-    static robotAnimate(){
-        RobotModel.instances.forEach(robot => {
-            robot.stepAnimation();
-            robot.gunSpinAnimation();
-            robot.shootAnimation();
-        });
-    }
-    
-    static moveRobotsForward(scene){
-        RobotModel.instances.forEach(robot => {
-            if(robot.robotBody.position.z > robotDelZ){
-                robot.selfDestruct();
-                console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
-                globals.gameOver = true;
-            }
-        });
-        
-        RobotModel.instances.forEach(robot => {
-            robot.robotBody.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
-            robot.leftHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
-            robot.rightHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
-        });
-    }
-
-    static animateAll(scene){
-
-        RobotModel.moveRobotsForward(scene);
-        RobotModel.robotAnimate();
 
     }
 
