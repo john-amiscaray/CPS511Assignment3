@@ -1,7 +1,7 @@
 import { globals } from "./globals.js";
 import * as THREE from 'three';
 
-const cannonTexture = new THREE.TextureLoader().load('../assets/cannonTexture.png');
+const cannonTexture = new THREE.TextureLoader().load('../assets/cannonTexture.jpg');
 
 function getRandomInRange(min, max) {
     return Math.random() * (max - min) + min;
