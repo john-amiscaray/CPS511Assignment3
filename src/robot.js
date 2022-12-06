@@ -253,7 +253,6 @@ class RobotModel{
         this.scene.remove(this.rightFoot);
         this.scene.remove(this.leftFoot);
         RobotModel.instances = RobotModel.instances.filter(robot => robot !== this);
-        RobotModel.checkWinCondition();
     }
 
     deathAnimation(){
@@ -270,6 +269,7 @@ class RobotModel{
         this.rightHip.position.y += animationIncrement;
         if(this.deathAnimationControl >= (Math.PI / 2)){
             this.selfDestruct();
+            RobotModel.checkWinCondition();
         }
     }
     
