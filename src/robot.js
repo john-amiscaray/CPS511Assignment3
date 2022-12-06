@@ -44,6 +44,7 @@ class RobotModel{
         this.gunSpinAnimationPosition = 0;
         this.bulletFiringControl = 0;
         this.isLeftSideStep = true;
+        this.alive = true;
     }
 
     drawBody(){
@@ -218,33 +219,51 @@ class RobotModel{
         RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
     }
 
-    diesFromLaser(){
-        this.scene.remove(this.robotBody);
-        this.scene.remove(this.leftHip);
-        this.scene.remove(this.rightHip);
-        this.scene.remove(this.leftLeg);
-        this.scene.remove(this.rightLeg);
-        this.scene.remove(this.rightFoot);
-        this.scene.remove(this.leftFoot);
-        RobotModel.instances = RobotModel.instances.filter(robot => robot != this);
-        if (RobotModel.current_level < 3){
-            RobotModel.level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length;
-            console.log("Nice kill! RobotModel.level_score:" + RobotModel.level_score);
-            // If all robots are defeated, start next level
-            if (RobotModel.level_score == RobotModel.level_details[RobotModel.current_level].robots && RobotModel.level_complete == false){
-                console.log("robot.js Level " + RobotModel.current_level + " Completed!")
-                RobotModel.current_level += 1;
-                RobotModel.level_complete = true;
-                RobotModel.level_score = 0;
+    deathAnimation(){
+        this.robotBody.position.y = -this.robotBodyWidth-this.hipLength;
+        this.leftHip.position.y  = -this.robotBodyWidth-this.hipLength;
+        this.rightHip.position.y  = -this.robotBodyWidth-this.hipLength;
+        /*
+        for (let i = 0; i <= 90; i++){
+            let rad_angle = -i* Math.PI/180;
+            this.robotBody.rotateX(rad_angle);
+            this.leftHip.rotateX(rad_angle);
+            this.rightHip.rotateX(rad_angle);
+        }*/
+
+        this.robotBody.rotateX(-Math.PI/2);
+        this.leftHip.rotateX(-Math.PI/2);
+        this.rightHip.rotateX(-Math.PI/2);
+    }
+
+    diesFromLaser(){    
+        if (this.alive){
+            this.alive = false;
+
+            this.deathAnimation();
+            //this.robotBody.rotateX(-Math.PI/2);
+            setTimeout(() => { this.selfDestruct(); }, 5000);
+            if (RobotModel.current_level < 3){
+                RobotModel.level_score = RobotModel.level_details[RobotModel.current_level].robots - RobotModel.instances.length;
+                console.log("Nice kill! RobotModel.level_score:" + RobotModel.level_score);
+                // If all robots are defeated, start next level
+                if (RobotModel.level_score == RobotModel.level_details[RobotModel.current_level].robots && RobotModel.level_complete == false){
+                    console.log("robot.js Level " + RobotModel.current_level + " Completed!")
+                    RobotModel.current_level += 1;
+                    RobotModel.level_complete = true;
+                    RobotModel.level_score = 0;
+                }
             }
         }
     }
 
     static robotAnimate(){
         RobotModel.instances.forEach(robot => {
-            robot.stepAnimation();
-            robot.gunSpinAnimation();
-            robot.shootAnimation();
+            if (robot.alive){
+                robot.stepAnimation();
+                robot.gunSpinAnimation();
+                robot.shootAnimation();
+            }
         });
     }
     
@@ -258,9 +277,11 @@ class RobotModel{
         });
         
         RobotModel.instances.forEach(robot => {
-            robot.robotBody.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
-            robot.leftHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
-            robot.rightHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
+            if (robot.alive){
+                robot.robotBody.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
+                robot.leftHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
+                robot.rightHip.position.z += RobotModel.level_details[RobotModel.current_level].speed; //0.1;
+            }
         });
     }
 
