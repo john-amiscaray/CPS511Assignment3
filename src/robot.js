@@ -7,6 +7,14 @@ import * as THREE from 'three';
 const robotDelZ = 5;
 const animationIncrement = (Math.PI / 32);
 
+const bodyMat_uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
+const bodyMat = new THREE.ShaderMaterial({ 
+    uniforms: bodyMat_uniforms,
+    vertexShader: getStandardVertexShader(),
+    fragmentShader: getStandardFragmentShader(),
+    lights: true
+});
+const body = new THREE.Mesh(bodyGeo, bodyMat);
 
 class RobotModel{
 
@@ -51,14 +59,14 @@ class RobotModel{
             this.robotBodyWidth, 
             this.robotBodyLength, 
             this.robotBodyDepth);
-        const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
-        const bodyMat = new THREE.ShaderMaterial({ 
-            uniforms: uniforms,
-            vertexShader: getStandardVertexShader(),
-            fragmentShader: getStandardFragmentShader(),
-            lights: true
-          });
-        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        //const uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/robotMainTexture.png' ));
+        // const bodyMat = new THREE.ShaderMaterial({ 
+        //     uniforms: uniforms,
+        //     vertexShader: getStandardVertexShader(),
+        //     fragmentShader: getStandardFragmentShader(),
+        //     lights: true
+        //   });
+        //const body = new THREE.Mesh(bodyGeo, bodyMat);
         body.position.x = this.bodyX;
         body.position.y = this.bodyY;
         body.position.z = this.bodyZ;
@@ -256,6 +264,8 @@ class RobotModel{
 
     deathAnimation(){
         //this.robotBody.material.color.setHex(0xFF0000);
+        this.robotBody.uniforms = getShaderUniforms(new THREE.TextureLoader().load( '../assets/bulletTexture.png' ));
+        this.robotBody.needsUpdate = true;
         this.robotBody.position.y = -this.robotBodyWidth-this.hipLength;
         this.leftHip.position.y  = -this.robotBodyWidth-this.hipLength;
         this.rightHip.position.y  = -this.robotBodyWidth-this.hipLength;
