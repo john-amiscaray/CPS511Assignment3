@@ -198,6 +198,8 @@ class RobotModel{
         RobotModel.instances.push(this);
         if (globals.currentLevel < 3){
             globals.levelScore = RobotModel.level_details[globals.currentLevel].robots - RobotModel.instances.length;
+            //console.log("RobotModel.instances.length:" + RobotModel.instances.length);
+            //console.log("globals.levelScore:" + globals.levelScore);
         } 
     }
 
@@ -291,6 +293,7 @@ class RobotModel{
     static moveRobotsForward(scene){
         RobotModel.instances.forEach(robot => {
             if(robot.robotBody.position.z > robotDelZ){
+                
                 robot.selfDestruct();
                 console.log("GAME OVER: A ROBOT LEAKED THROUGH!!!");
                 globals.gameOver = true;
@@ -298,9 +301,11 @@ class RobotModel{
         });
         
         RobotModel.instances.forEach(robot => {
-            robot.robotBody.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
-            robot.leftHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
-            robot.rightHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+            if (robot.alive){
+                robot.robotBody.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+                robot.leftHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+                robot.rightHip.position.z += RobotModel.level_details[globals.currentLevel].speed; //0.1;
+            }
         });
     }
 
