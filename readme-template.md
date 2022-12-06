@@ -25,6 +25,22 @@ To Visit App:
 
 `http://localhost:5173/`  
 
+
+## Controls
+
+- Mouse to move the defensive cannon
+- Spacebar to shoot the defensive cannon's laser
+- 'r' to reset the level
+
+## Game features
+
+- 7+ texture-mapped robots that shoot bullets at the player
+- Controllable Texture-mapped defensive cannon that shoots lasers to destroy said robots
+- Death animations for the robots (they do backflips!)
+- Damaged animation for defensive cannon when it reaches 0 health
+- Defensive cannon uses a custom mesh
+- Vertex and fragment shaders are implemented to render lightning effects such as the laser's glow
+
 ## Bonus marks
 
 1. The defensive cannon fires a laser instead of a projectile.
